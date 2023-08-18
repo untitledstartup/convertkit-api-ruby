@@ -21,7 +21,7 @@ module ConvertKit
         redirect_uri: @redirect_uri
       }
 
-      @conn.post(TOKEN_PATH, params)
+      AccessTokenResponse.new @conn.post(TOKEN_PATH, params)
     end
 
     def refresh_token(option = {})
@@ -32,7 +32,7 @@ module ConvertKit
         grant_type: 'refresh_token'
       }
 
-      @conn.post(TOKEN_PATH, params)
+      AccessTokenResponse.new @conn.post(TOKEN_PATH, params)
     end
   end
 end

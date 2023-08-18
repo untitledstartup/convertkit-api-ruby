@@ -12,13 +12,5 @@ module CovertKit
         end
       end
     end
-
-    def get(path, params = {})
-      @conn.get(path, params)
-    end
-
-    def post(path, params = {})
-      @conn.post(path, params)
-    end
   end
 end
