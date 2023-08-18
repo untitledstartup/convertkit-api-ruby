@@ -1,7 +1,9 @@
 require 'convertkit/version'
 module ConvertKit
 
-  def self.version
-    ConvertKit::VERSION
+  class << self
+    def version
+      ConvertKit::VERSION
+    end
   end
 end
