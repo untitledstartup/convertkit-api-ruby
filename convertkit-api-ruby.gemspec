@@ -10,4 +10,6 @@ Gem::Specification.new do |gem|
   gem.summary     = "Ruby SDK for invoking the ConvertKit API"
   gem.license     = 'MIT'
   gem.files       = Dir["{lib}/**/*.rb"]
+
+  gem.add_dependency 'faraday', '~>2.7'
 end
