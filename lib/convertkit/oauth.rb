@@ -3,13 +3,13 @@ module ConvertKit
     URL = 'https://app.convertkit.com/'.freeze
     TOKEN_PATH = 'oauth/token'.freeze
 
-    def initialize(client_id, client_secret, options)
+    def initialize(client_id, client_secret, options = {})
       @id = client_id
       @secret = client_secret
       @redirect_uri = options[:redirect_uri]
       @code = options[:code]
       @refresh_token = options[:refresh_token]
-      @conn = ConvertKit::Connection.new(URL)
+      @conn = ConvertKit::ConnectionHelper.get_connection(URL)
     end
 
     def get_token(option = {})
@@ -21,7 +21,7 @@ module ConvertKit
         redirect_uri: @redirect_uri
       }
 
-      AccessTokenResponse.new @conn.post(TOKEN_PATH, params)
+      handle_response @conn.post(TOKEN_PATH, params)
     end
 
     def refresh_token(option = {})
@@ -32,7 +32,31 @@ module ConvertKit
         grant_type: 'refresh_token'
       }
 
-      AccessTokenResponse.new @conn.post(TOKEN_PATH, params)
+      handle_response @conn.post(TOKEN_PATH, params)
+    end
+
+    private
+
+    def handle_response(response)
+      if response.success?
+        AccessTokenResponse.new response.body
+      else
+        error_description = response.body['error_description']
+        case response.body['error']
+        when 'invalid_request'
+          raise ConvertKit::InvalidRequestError, error_description
+        when 'unauthorized_client'
+          raise ConvertKit::UnauthorizedClientError, error_description
+        when 'access_denied'
+          raise ConvertKit::AccessDeniedError, error_description
+        when 'unsupported_response_type'
+          raise ConvertKit::UnsupportedResponseTypeError, error_description
+        when 'invalid_scope'
+          raise ConvertKit::InvalidScopeError, error_description
+        else
+          raise ConvertKit::OauthError, error_description
+        end
+      end
     end
   end
 end
