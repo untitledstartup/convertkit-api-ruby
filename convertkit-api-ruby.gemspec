@@ -12,4 +12,7 @@ Gem::Specification.new do |gem|
   gem.files       = Dir["{lib}/**/*.rb"]
 
   gem.add_dependency 'faraday', '~>2.7'
+
+  # tests
+  gem.add_development_dependency 'rspec', '~>3.9'
 end
