@@ -12,13 +12,13 @@ module ConvertKit
       @conn = ConvertKit::ConnectionHelper.get_connection(URL)
     end
 
-    def get_token(option = {})
+    def get_token(options = {})
       params = {
         client_id: @id,
         client_secret: @secret,
-        code: option[:code] || @code,
+        code: options[:code] || @code,
         grant_type: 'authorization_code',
-        redirect_uri: @redirect_uri
+        redirect_uri: options[:redirect_uri] || @redirect_uri
       }
 
       handle_response @conn.post(TOKEN_PATH, params)
