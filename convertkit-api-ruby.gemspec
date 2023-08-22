@@ -15,4 +15,5 @@ Gem::Specification.new do |gem|
 
   # tests
   gem.add_development_dependency 'rspec', '~>3.9'
+  gem.add_development_dependency 'simplecov', '~>0.2'
 end

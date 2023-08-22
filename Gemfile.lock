@@ -8,6 +8,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     diff-lcs (1.5.0)
+    docile (1.4.0)
     faraday (2.7.10)
       faraday-net_http (>= 2.0, < 3.1)
       ruby2_keywords (>= 0.0.4)
@@ -26,6 +27,12 @@ GEM
       rspec-support (~> 3.12.0)
     rspec-support (3.12.1)
     ruby2_keywords (0.0.5)
+    simplecov (0.22.0)
+      docile (~> 1.1)
+      simplecov-html (~> 0.11)
+      simplecov_json_formatter (~> 0.1)
+    simplecov-html (0.12.3)
+    simplecov_json_formatter (0.1.4)
 
 PLATFORMS
   x86_64-darwin-21
@@ -34,6 +41,7 @@ PLATFORMS
 DEPENDENCIES
   convertkit-api-ruby!
   rspec (~> 3.9)
+  simplecov (~> 0.2)
 
 BUNDLED WITH
    2.3.19
