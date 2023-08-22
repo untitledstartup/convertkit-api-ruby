@@ -1,5 +1,7 @@
 module ConvertKit
-
+  # The client is responsible for making requests to the ConvertKit API. It requires that an auth token is provided.
+  # Without a valid token, the client will not be able to retrieve data from the API.
+  # The ConvertKit OAuth class can be used to obtain this token.
   class Client
     API_URL = 'https://api.convertkit.com/alpha'.freeze # Using Alpha API as this is currently in active development
     def initialize(auth_token)

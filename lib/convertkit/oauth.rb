@@ -1,4 +1,7 @@
 module ConvertKit
+  # Use this class to get an access token or refresh token using the OAuth2 flow. The client id and client secret
+  # should be obtained from ConvertKit and is required for this flow. The code should be obtained when initially connect
+  # to ConvertKit via the https://app.convertkit.com/oauth/authorize endpoint.
   class OAuth
     URL = 'https://app.convertkit.com/'.freeze
     TOKEN_PATH = 'oauth/token'.freeze
