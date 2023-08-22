@@ -37,97 +37,150 @@ describe ConvertKit::OAuth do
 
   describe '#get_token' do
     let(:oauth) { ConvertKit::OAuth.new(client_id, client_secret, redirect_uri: redirect_uri, code: code, refresh_token: refresh_token) }
+    let(:access_token_response) { { 'access_token' => 'token', 'expires_in'=> 3600, 'created_at'=> Time.now.to_i } }
 
     before do
       allow(ConvertKit::ConnectionHelper).to receive(:get_connection).with(url).and_return(connection)
+      allow(response).to receive(:success?).and_return(true)
+      allow(response).to receive(:body).and_return(access_token_response)
     end
 
-    context 'when server returns success response' do
-      let!(:access_token_response) { { 'access_token' => 'token', 'expires_in'=> 3600, 'created_at'=> Time.now.to_i } }
+    it 'returns access token response' do
+      expect(connection).to receive(:post).with(token_path, {
+        client_id: client_id,
+        client_secret: client_secret,
+        code: code,
+        grant_type: 'authorization_code',
+        redirect_uri: redirect_uri
+      }).and_return(response)
 
-      before do
-        allow(response).to receive(:success?).and_return(true)
-        allow(response).to receive(:body).and_return(access_token_response)
-      end
+      response = oauth.get_token
+
+      expect(response.access_token).to eq(access_token_response['access_token'])
+      expect(response.expires_in).to eq(access_token_response['expires_in'])
+      expect(response.created_at).to eq(access_token_response['created_at'])
+    end
+
+    context 'with code and redirect uri provided' do
+      let!(:new_code) { 'new_code' }
+      let(:new_redirect_uri) { 'new_redirect_uri' }
 
       it 'returns access token response' do
         expect(connection).to receive(:post).with(token_path, {
           client_id: client_id,
           client_secret: client_secret,
-          code: code,
+          code: new_code,
           grant_type: 'authorization_code',
-          redirect_uri: redirect_uri
+          redirect_uri: new_redirect_uri
         }).and_return(response)
 
-        response = oauth.get_token
+        response = oauth.get_token(code: new_code, redirect_uri: new_redirect_uri)
 
         expect(response.access_token).to eq(access_token_response['access_token'])
         expect(response.expires_in).to eq(access_token_response['expires_in'])
         expect(response.created_at).to eq(access_token_response['created_at'])
       end
+    end
+  end
 
-      context 'with code and redirect uri provided' do
-        let!(:new_code) { 'new_code' }
-        let(:new_redirect_uri) { 'new_redirect_uri' }
+  describe '#refresh_token' do
+    let(:oauth) { ConvertKit::OAuth.new(client_id, client_secret, redirect_uri: redirect_uri, code: code, refresh_token: refresh_token) }
+    let(:access_token_response) { { 'access_token' => 'token', 'expires_in'=> 3600, 'created_at'=> Time.now.to_i } }
 
-        it 'returns access token response' do
-          expect(connection).to receive(:post).with(token_path, {
-            client_id: client_id,
-            client_secret: client_secret,
-            code: new_code,
-            grant_type: 'authorization_code',
-            redirect_uri: new_redirect_uri
-          }).and_return(response)
+    before do
+      allow(ConvertKit::ConnectionHelper).to receive(:get_connection).with(url).and_return(connection)
+      allow(response).to receive(:success?).and_return(true)
+      allow(response).to receive(:body).and_return(access_token_response)
+    end
 
-          response = oauth.get_token(code: new_code, redirect_uri: new_redirect_uri)
+    it 'returns access token response' do
+      expect(connection).to receive(:post).with(token_path, {
+        client_id: client_id,
+        client_secret: client_secret,
+        refresh_token: refresh_token,
+        grant_type: 'refresh_token'
+      }).and_return(response)
 
-          expect(response.access_token).to eq(access_token_response['access_token'])
-          expect(response.expires_in).to eq(access_token_response['expires_in'])
-          expect(response.created_at).to eq(access_token_response['created_at'])
-        end
+      response = oauth.refresh_token
+
+      expect(response.access_token).to eq(access_token_response['access_token'])
+      expect(response.expires_in).to eq(access_token_response['expires_in'])
+      expect(response.created_at).to eq(access_token_response['created_at'])
+    end
+
+    context 'with refresh token provided' do
+      let!(:new_refresh_token) { 'new_refresh_token' }
+
+      it 'returns access token response' do
+        expect(connection).to receive(:post).with(token_path, {
+          client_id: client_id,
+          client_secret: client_secret,
+          refresh_token: new_refresh_token,
+          grant_type: 'refresh_token'
+        }).and_return(response)
+
+        response = oauth.refresh_token(refresh_token: new_refresh_token)
+
+        expect(response.access_token).to eq(access_token_response['access_token'])
+        expect(response.expires_in).to eq(access_token_response['expires_in'])
+        expect(response.created_at).to eq(access_token_response['created_at'])
+      end
+    end
+  end
+
+  describe '#handle_response' do
+    let(:oauth) { ConvertKit::OAuth.new(client_id, client_secret, redirect_uri: redirect_uri, code: code, refresh_token: refresh_token) }
+
+    before do
+      allow(ConvertKit::ConnectionHelper).to receive(:get_connection).with(url).and_return(connection)
+    end
+
+    context 'when server returns error response' do
+      let(:response) { double('response', success?: true, body: 'test_body') }
+
+      it 'returns an access token response' do
+        expect(ConvertKit::AccessTokenResponse).to receive(:new).with(response.body)
+        oauth.send(:handle_response, response)
       end
     end
 
     context 'when server returns error response' do
-      before do
-        allow(connection).to receive(:post).and_return(response)
-        allow(response).to receive(:success?).and_return(false)
-      end
+      let(:response) { double('response', success?: false) }
 
       it 'raises invalid grant error' do
         error_response = { 'error' => 'invalid_request', 'error_description' => 'The request is missing a required parameter' }
         allow(response).to receive(:body).and_return(error_response)
-        expect { oauth.get_token }.to raise_error(ConvertKit::InvalidRequestError, error_response['error_description'])
+        expect { oauth.send(:handle_response, response) }.to raise_error(ConvertKit::InvalidRequestError, error_response['error_description'])
       end
 
       it 'raises unauthorized client error' do
         error_response = { 'error' => 'unauthorized_client', 'error_description' => 'The client is not authorized to request an authorization code using this method.' }
         allow(response).to receive(:body).and_return(error_response)
-        expect { oauth.get_token }.to raise_error(ConvertKit::UnauthorizedClientError, error_response['error_description'])
+        expect { oauth.send(:handle_response, response) }.to raise_error(ConvertKit::UnauthorizedClientError, error_response['error_description'])
       end
 
       it 'raises access denied error' do
         error_response = { 'error' => 'access_denied', 'error_description' => 'The resource owner or authorization server denied the request.' }
         allow(response).to receive(:body).and_return(error_response)
-        expect { oauth.get_token }.to raise_error(ConvertKit::AccessDeniedError, error_response['error_description'])
+        expect { oauth.send(:handle_response, response) }.to raise_error(ConvertKit::AccessDeniedError, error_response['error_description'])
       end
 
       it 'raises unsupported response type error' do
         error_response = { 'error' => 'unsupported_response_type', 'error_description' => 'The authorization server does not support obtaining an authorization code using this method.' }
         allow(response).to receive(:body).and_return(error_response)
-        expect { oauth.get_token }.to raise_error(ConvertKit::UnsupportedResponseTypeError, error_response['error_description'])
+        expect { oauth.send(:handle_response, response) }.to raise_error(ConvertKit::UnsupportedResponseTypeError, error_response['error_description'])
       end
 
       it 'raises invalid scope error' do
         error_response = { 'error' => 'invalid_scope', 'error_description' => 'The requested scope is invalid, unknown, or malformed.' }
         allow(response).to receive(:body).and_return(error_response)
-        expect { oauth.get_token }.to raise_error(ConvertKit::InvalidScopeError, error_response['error_description'])
+        expect { oauth.send(:handle_response, response) }.to raise_error(ConvertKit::InvalidScopeError, error_response['error_description'])
       end
 
       it 'raises generic error' do
         error_response = { 'error' => 'server_error', 'error_description' => 'The authorization server encountered an unexpected condition that prevented it from fulfilling the request.' }
         allow(response).to receive(:body).and_return(error_response)
-        expect { oauth.get_token }.to raise_error(ConvertKit::OauthError, error_response['error_description'])
+        expect { oauth.send(:handle_response, response) }.to raise_error(ConvertKit::OauthError, error_response['error_description'])
       end
     end
   end
