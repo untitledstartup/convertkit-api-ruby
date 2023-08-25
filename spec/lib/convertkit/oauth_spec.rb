@@ -19,7 +19,7 @@ describe ConvertKit::OAuth do
       expect(oauth.instance_variable_get(:@redirect_uri)).to eq(nil)
       expect(oauth.instance_variable_get(:@code)).to eq(nil)
       expect(oauth.instance_variable_get(:@refresh_token)).to eq(nil)
-      expect(oauth.instance_variable_get(:@conn)).to eq(connection)
+      expect(oauth.instance_variable_get(:@connection)).to eq(connection)
     end
 
     it 'sets client id, client secret, redirect uri, code, refresh token and connection' do
@@ -31,7 +31,7 @@ describe ConvertKit::OAuth do
       expect(oauth.instance_variable_get(:@redirect_uri)).to eq(redirect_uri)
       expect(oauth.instance_variable_get(:@code)).to eq(code)
       expect(oauth.instance_variable_get(:@refresh_token)).to eq(refresh_token)
-      expect(oauth.instance_variable_get(:@conn)).to eq(connection)
+      expect(oauth.instance_variable_get(:@connection)).to eq(connection)
     end
   end
 

@@ -12,7 +12,7 @@ module ConvertKit
       @redirect_uri = options[:redirect_uri]
       @code = options[:code]
       @refresh_token = options[:refresh_token]
-      @conn = ConvertKit::ConnectionHelper.get_connection(URL)
+      @connection = ConvertKit::ConnectionHelper.get_connection(URL)
     end
 
     def get_token(options = {})
@@ -24,7 +24,7 @@ module ConvertKit
         redirect_uri: options[:redirect_uri] || @redirect_uri
       }
 
-      handle_response @conn.post(TOKEN_PATH, params)
+      handle_response @connection.post(TOKEN_PATH, params)
     end
 
     def refresh_token(option = {})
@@ -35,7 +35,7 @@ module ConvertKit
         grant_type: 'refresh_token'
       }
 
-      handle_response @conn.post(TOKEN_PATH, params)
+      handle_response @connection.post(TOKEN_PATH, params)
     end
 
     private

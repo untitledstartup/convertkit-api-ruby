@@ -7,7 +7,7 @@ describe ConvertKit::Client do
         .with(ConvertKit::Client::API_URL, auth_token: 'test_token')
         .and_return(connection)
       client = ConvertKit::Client.new('test_token')
-      expect(client.instance_variable_get(:@conn)).to eq(connection)
+      expect(client.instance_variable_get(:@connection)).to eq(connection)
     end
   end
 
@@ -29,7 +29,7 @@ describe ConvertKit::Client do
     let(:response) { double('response', success?: true, body: 'test_body') }
 
     it 'calls the get method on the connection' do
-      expect(client.instance_variable_get(:@conn)).to receive(:get).with('test_path', {}).and_return(response)
+      expect(client.instance_variable_get(:@connection)).to receive(:get).with('test_path', {}).and_return(response)
       expect(client.get('test_path')).to eq('test_body')
     end
   end
@@ -39,7 +39,7 @@ describe ConvertKit::Client do
     let(:response) { double('response', success?: true, body: 'test_body') }
 
     it 'calls the get method on the connection' do
-      expect(client.instance_variable_get(:@conn)).to receive(:post).with('test_path', {}).and_return(response)
+      expect(client.instance_variable_get(:@connection)).to receive(:post).with('test_path', {}).and_return(response)
       expect(client.post('test_path')).to eq('test_body')
     end
   end
