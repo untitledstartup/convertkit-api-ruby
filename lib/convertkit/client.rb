@@ -28,7 +28,8 @@ module ConvertKit
       if response.success?
         response.body
       else
-        raise ConvertKit::APIError, response.body
+        # TODO add more specific error handling with different error classes
+        raise ConvertKit::APIError, "#{response.status}: #{response.body}"
       end
     end
   end

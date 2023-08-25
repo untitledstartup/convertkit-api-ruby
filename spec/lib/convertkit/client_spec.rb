@@ -56,10 +56,10 @@ describe ConvertKit::Client do
     end
 
     context 'when the response is not successful' do
-      let(:response) { double('response', success?: false, body: 'test_body') }
+      let(:response) { double('response', success?: false, body: 'Bad Request', status: 400) }
 
       it 'raises an APIError' do
-        expect { client.send(:handle_response, response) }.to raise_error(ConvertKit::APIError)
+        expect { client.send(:handle_response, response) }.to raise_error(ConvertKit::APIError, '400: Bad Request')
       end
     end
   end
