@@ -11,9 +11,9 @@ Gem::Specification.new do |gem|
   gem.license     = 'MIT'
   gem.files       = Dir['{lib}/**/*.rb']
 
-  gem.add_dependency 'faraday', '~>2.7'
+  gem.add_dependency 'faraday', ['>= 1.0', '< 3.0']
 
   # tests
-  gem.add_development_dependency 'rspec', '~>3.9'
-  gem.add_development_dependency 'simplecov', '~>0.2'
+  gem.add_development_dependency 'rspec', '~> 3.0'
+  gem.add_development_dependency 'simplecov', '~> 0.2'
 end
