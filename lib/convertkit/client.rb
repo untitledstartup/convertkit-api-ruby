@@ -5,7 +5,7 @@ module ConvertKit
   class Client
     API_URL = 'https://api.convertkit.com/alpha'.freeze # Using Alpha API as this is currently in active development
     def initialize(auth_token)
-      @connection = ConvertKit::ConnectionHelper.get_connection(API_URL, auth_token: auth_token)
+      @connection = ConvertKit::Connection.new(API_URL, auth_token: auth_token)
     end
 
     def account
