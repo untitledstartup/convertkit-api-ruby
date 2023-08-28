@@ -3,7 +3,7 @@ describe ConvertKit::Client do
 
   describe '#initialize' do
     it 'sets the auth_token' do
-      expect(ConvertKit::ConnectionHelper).to receive(:get_connection)
+      expect(ConvertKit::Connection).to receive(:new)
         .with(ConvertKit::Client::API_URL, auth_token: 'test_token')
         .and_return(connection)
       client = ConvertKit::Client.new('test_token')
@@ -15,7 +15,7 @@ describe ConvertKit::Client do
     let(:client) { ConvertKit::Client.new('test_token') }
 
     before do
-      allow(ConvertKit::ConnectionHelper).to receive(:get_connection).and_return(connection)
+      allow(ConvertKit::Connection).to receive(:new).and_return(connection)
     end
 
     it 'returns an account resource' do

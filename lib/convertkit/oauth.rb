@@ -12,7 +12,7 @@ module ConvertKit
       @redirect_uri = options[:redirect_uri]
       @code = options[:code]
       @refresh_token = options[:refresh_token]
-      @connection = ConvertKit::ConnectionHelper.get_connection(URL)
+      @connection = ConvertKit::Connection.new(URL)
     end
 
     def get_token(options = {})

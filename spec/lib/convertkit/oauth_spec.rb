@@ -11,7 +11,7 @@ describe ConvertKit::OAuth do
 
   describe '#initialize' do
     it 'sets client id, client secret and connection' do
-      expect(ConvertKit::ConnectionHelper).to receive(:get_connection).with(url).and_return(connection)
+      expect(ConvertKit::Connection).to receive(:new).with(url).and_return(connection)
 
       oauth = ConvertKit::OAuth.new(client_id, client_secret)
       expect(oauth.instance_variable_get(:@id)).to eq(client_id)
@@ -23,7 +23,7 @@ describe ConvertKit::OAuth do
     end
 
     it 'sets client id, client secret, redirect uri, code, refresh token and connection' do
-      expect(ConvertKit::ConnectionHelper).to receive(:get_connection).with(url).and_return(connection)
+      expect(ConvertKit::Connection).to receive(:new).with(url).and_return(connection)
 
       oauth = ConvertKit::OAuth.new(client_id, client_secret, redirect_uri: redirect_uri, code: code, refresh_token: refresh_token)
       expect(oauth.instance_variable_get(:@id)).to eq(client_id)
@@ -40,7 +40,7 @@ describe ConvertKit::OAuth do
     let(:access_token_response) { { 'access_token' => 'token', 'expires_in'=> 3600, 'created_at'=> Time.now.to_i } }
 
     before do
-      allow(ConvertKit::ConnectionHelper).to receive(:get_connection).with(url).and_return(connection)
+      allow(ConvertKit::Connection).to receive(:new).with(url).and_return(connection)
       allow(response).to receive(:success?).and_return(true)
       allow(response).to receive(:body).and_return(access_token_response)
     end
@@ -88,7 +88,7 @@ describe ConvertKit::OAuth do
     let(:access_token_response) { { 'access_token' => 'token', 'expires_in'=> 3600, 'created_at'=> Time.now.to_i } }
 
     before do
-      allow(ConvertKit::ConnectionHelper).to receive(:get_connection).with(url).and_return(connection)
+      allow(ConvertKit::Connection).to receive(:new).with(url).and_return(connection)
       allow(response).to receive(:success?).and_return(true)
       allow(response).to receive(:body).and_return(access_token_response)
     end
@@ -132,7 +132,7 @@ describe ConvertKit::OAuth do
     let(:oauth) { ConvertKit::OAuth.new(client_id, client_secret, redirect_uri: redirect_uri, code: code, refresh_token: refresh_token) }
 
     before do
-      allow(ConvertKit::ConnectionHelper).to receive(:get_connection).with(url).and_return(connection)
+      allow(ConvertKit::Connection).to receive(:new).with(url).and_return(connection)
     end
 
     context 'when server returns error response' do
