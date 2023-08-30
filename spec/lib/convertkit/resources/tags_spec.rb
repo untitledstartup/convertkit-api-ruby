@@ -48,6 +48,29 @@ describe ConvertKit::Resources::Tags do
     end
   end
 
+  describe '#tag_subscriber' do
+    let(:tags) { ConvertKit::Resources::Tags.new(client) }
+
+    it 'tags a subscriber' do
+      response = {
+        'id' => 1,
+        'state' => 'active',
+        'subscribable_id' => 2,
+        'subscribable_type' => 'tag',
+        'subscriber' => { 'id' => 3 },
+        'created_at' => '2023-08-09T04:30:00Z'
+      }
+      options = {first_name: 'name', fields: { field_key: 'field_value' }, tags:[1,2]}
+      expect(client).to receive(:post).with(
+        'tags/1/subscribe',
+        { email: 'test_email', first_name: 'name', fields: { field_key: 'field_value' }, tags:[1,2]}
+      ).and_return(response)
+
+      subscription_response = tags.tag_subscriber(1, 'test_email', options)
+      validate_subscription(subscription_response, response)
+    end
+  end
+
   describe ConvertKit::Resources::TagResponse do
     describe '#initialize' do
       let(:response3) { { 'id' => 2, 'name' => 'test_tag_name', 'created_at' => '2023-08-09T04:30:00Z', updated_at: '2023-08-19T04:30:00Z'} }
@@ -72,6 +95,31 @@ describe ConvertKit::Resources::Tags do
     end
   end
 
+  describe ConvertKit::Resources::SubscriptionResponse do
+    describe '#initialize' do
+      it 'sets the id and state' do
+        response = { 'id' => 1, 'state' => 'active'}
+        tag_response = ConvertKit::Resources::SubscriptionResponse.new(response)
+        validate_subscription(tag_response, response)
+      end
+
+      it 'sets the id, state, source, referrer, subscribable_id, subscribable_type, subscriber_id, created_at' do
+        response = {
+          'id' => 2,
+          'state' => 'active',
+          'source' => 'source',
+          'referrer' => 'referrer',
+          'subscribable_id' => 1,
+          'subscribable_type' => 'tag',
+          'created_at' => '2023-08-09T04:30:00Z',
+          'subscriber' => { 'id' => 4}
+        }
+        tag_response = ConvertKit::Resources::SubscriptionResponse.new(response)
+        validate_subscription(tag_response, response)
+      end
+    end
+  end
+
   def validate_tag(tag, values)
     expect(tag.id).to eq(values['id'])
     expect(tag.name).to eq(values['name'])
@@ -87,5 +135,16 @@ describe ConvertKit::Resources::Tags do
     tags.each_with_index do |tag, index|
       validate_tag(tag, values[index])
     end
+  end
+
+  def validate_subscription(subscription, value)
+    expect(subscription.id).to eq(value['id'])
+    expect(subscription.state).to eq(value['state'])
+    expect(subscription.source).to eq(value['source'])
+    expect(subscription.referrer).to eq(value['referrer'])
+    expect(subscription.subscribable_id).to eq(value['subscribable_id'])
+    expect(subscription.subscribable_type).to eq(value['subscribable_type'])
+    expect(subscription.subscriber_id).to eq(value.dig('subscriber', 'id'))
+    expect(subscription.created_at).to eq(DateTime.parse(value['created_at'])) unless value.fetch('created_at', '').strip.empty?
   end
 end

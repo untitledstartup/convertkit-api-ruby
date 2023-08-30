@@ -29,6 +29,19 @@ module ConvertKit
           TagResponse.new(response)
         end
       end
+
+      def tag_subscriber(tag_id, email, options = {})
+        request = {
+          email: email,
+          first_name: options[:first_name],
+          fields: options[:fields],
+          tags: options[:tags]
+        }.compact
+
+        response = @client.post("#{PATH}/#{tag_id}/subscribe", request)
+
+        SubscriptionResponse.new(response)
+      end
     end
 
     class TagResponse
@@ -62,7 +75,7 @@ module ConvertKit
         @referrer = response['referrer']
         @subscribable_id = response['subscribable_id']
         @subscribable_type = response['subscribable_type']
-        @subscriber_id = response['subscriber']&['id']
+        @subscriber_id = response.dig('subscriber', 'id')
         @created_at = DateTime.parse(response['created_at']) unless response.fetch('created_at', '').strip.empty?
       end
     end
