@@ -71,6 +71,18 @@ describe ConvertKit::Resources::Tags do
     end
   end
 
+  describe '#remove_tag_from_subscriber' do
+    let(:tags) { ConvertKit::Resources::Tags.new(client) }
+
+    it 'removes a tag from a subscriber' do
+      response = { 'id' => 1, 'name' => 'test_tag_name', 'created_at' => '2023-08-09T04:30:00Z' }
+      expect(client).to receive(:delete).with('subscribers/3/tags/1').and_return(response)
+
+      tag_response = tags.remove_tag_from_subscriber(1, 3)
+      validate_tag(tag_response, response)
+    end
+  end
+
   describe ConvertKit::Resources::TagResponse do
     describe '#initialize' do
       let(:response3) { { 'id' => 2, 'name' => 'test_tag_name', 'created_at' => '2023-08-09T04:30:00Z', updated_at: '2023-08-19T04:30:00Z'} }

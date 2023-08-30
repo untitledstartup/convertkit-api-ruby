@@ -42,6 +42,12 @@ module ConvertKit
 
         SubscriptionResponse.new(response)
       end
+
+      def remove_tag_from_subscriber(tag_id, subscriber_id)
+        response = @client.delete("subscribers/#{subscriber_id}/#{PATH}/#{tag_id}")
+
+        TagResponse.new(response)
+      end
     end
 
     class TagResponse
