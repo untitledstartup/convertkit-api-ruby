@@ -26,6 +26,11 @@ module ConvertKit
       handle_response(response)
     end
 
+    def delete(path, params = {})
+      response = @connection.delete(path, params)
+      handle_response(response)
+    end
+
     private
 
     def handle_response(response)

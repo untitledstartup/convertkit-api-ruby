@@ -24,6 +24,11 @@ module ConvertKit
       process_response(response)
     end
 
+    def delete(path, params = {})
+      response = @connection.delete(path, process_request(params))
+      process_response(response)
+    end
+
     private
 
     def process_request(params)

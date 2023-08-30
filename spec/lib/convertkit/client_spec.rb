@@ -57,6 +57,16 @@ describe ConvertKit::Client do
     end
   end
 
+  describe '#delete' do
+    let(:client) { ConvertKit::Client.new('test_token') }
+    let(:response) { double('response', success?: true, body: 'test_body') }
+
+    it 'calls the get method on the connection' do
+      expect(client.instance_variable_get(:@connection)).to receive(:delete).with('test_path', {}).and_return(response)
+      expect(client.delete('test_path')).to eq('test_body')
+    end
+  end
+
   describe '#handle_response' do
     let(:client) { ConvertKit::Client.new('test_token') }
 
