@@ -48,6 +48,12 @@ module ConvertKit
 
         TagResponse.new(response)
       end
+
+      def remove_tag_from_subscriber_by_email(tag_id, subscriber_email)
+        response = @client.post("#{PATH}/#{tag_id}/unsubscribe", { email: subscriber_email})
+
+        TagResponse.new(response)
+      end
     end
 
     class TagResponse
