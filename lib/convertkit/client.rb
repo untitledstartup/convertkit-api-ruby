@@ -12,6 +12,10 @@ module ConvertKit
       @account ||= ConvertKit::Resources::Account.new(self)
     end
 
+    def tags
+      @tags ||= ConvertKit::Resources::Tags.new(self)
+    end
+
     def get(path, params = {})
       response = @connection.get(path, params)
       handle_response(response)

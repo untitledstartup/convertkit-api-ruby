@@ -24,6 +24,19 @@ describe ConvertKit::Client do
     end
   end
 
+  describe '#tags' do
+    let(:client) { ConvertKit::Client.new('test_token') }
+
+    before do
+      allow(ConvertKit::Connection).to receive(:new).and_return(connection)
+    end
+
+    it 'returns an account resource' do
+      expect(client.tags).to be_a(ConvertKit::Resources::Tags)
+      expect(client.tags.instance_variable_get(:@client)).to be(client)
+    end
+  end
+
   describe '#get' do
     let(:client) { ConvertKit::Client.new('test_token') }
     let(:response) { double('response', success?: true, body: 'test_body') }
