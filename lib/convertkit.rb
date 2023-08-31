@@ -5,6 +5,8 @@ require 'convertkit/error'
 require 'convertkit/oauth'
 require 'convertkit/resources/account'
 require 'convertkit/resources/tags'
+require 'convertkit/resources/tag_response'
+require 'convertkit/resources/tag_subscription_response'
 require 'convertkit/version'
 
 module ConvertKit
