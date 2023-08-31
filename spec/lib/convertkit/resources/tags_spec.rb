@@ -1,4 +1,6 @@
 describe ConvertKit::Resources::Tags do
+  include Validators::TagsValidators
+
   let(:client) { double('client') }
 
   describe '#initialize' do
@@ -67,7 +69,7 @@ describe ConvertKit::Resources::Tags do
       ).and_return(response)
 
       subscription_response = tags.tag_subscriber(1, 'test_email', options)
-      validate_subscription(subscription_response, response)
+      validate_tag_subscription(subscription_response, response)
     end
   end
 
@@ -93,82 +95,5 @@ describe ConvertKit::Resources::Tags do
       tag_response = tags.remove_tag_from_subscriber_by_email(1, 'test@test.com')
       validate_tag(tag_response, response)
     end
-  end
-
-  describe ConvertKit::Resources::TagResponse do
-    describe '#initialize' do
-      let(:response3) { { 'id' => 2, 'name' => 'test_tag_name', 'created_at' => '2023-08-09T04:30:00Z', updated_at: '2023-08-19T04:30:00Z'} }
-
-      it 'sets the id, name and created_at' do
-        response = { 'id' => 1, 'name' => 'test_tag_name', 'created_at' => '2023-08-09T04:30:00Z'}
-        tag_response = ConvertKit::Resources::TagResponse.new(response)
-        validate_tag(tag_response, response)
-      end
-
-      it 'sets the id and name' do
-        response = { 'id' => 2, 'name' => 'test_tag_name'}
-        tag_response = ConvertKit::Resources::TagResponse.new(response)
-        validate_tag(tag_response, response)
-      end
-
-      it 'sets the id, name, account_id, state, created_at, updated_at and deleted_at' do
-        response = { 'id' => 3, 'name' => 'test_tag_name', 'account_id' => 1, 'state' => 'available', 'created_at' => '2023-08-09T04:30:00Z', updated_at: '2023-08-19T04:30:00Z'}
-        tag_response = ConvertKit::Resources::TagResponse.new(response)
-        validate_tag(tag_response, response)
-      end
-    end
-  end
-
-  describe ConvertKit::Resources::SubscriptionResponse do
-    describe '#initialize' do
-      it 'sets the id and state' do
-        response = { 'id' => 1, 'state' => 'active'}
-        tag_response = ConvertKit::Resources::SubscriptionResponse.new(response)
-        validate_subscription(tag_response, response)
-      end
-
-      it 'sets the id, state, source, referrer, subscribable_id, subscribable_type, subscriber_id, created_at' do
-        response = {
-          'id' => 2,
-          'state' => 'active',
-          'source' => 'source',
-          'referrer' => 'referrer',
-          'subscribable_id' => 1,
-          'subscribable_type' => 'tag',
-          'created_at' => '2023-08-09T04:30:00Z',
-          'subscriber' => { 'id' => 4}
-        }
-        tag_response = ConvertKit::Resources::SubscriptionResponse.new(response)
-        validate_subscription(tag_response, response)
-      end
-    end
-  end
-
-  def validate_tag(tag, values)
-    expect(tag.id).to eq(values['id'])
-    expect(tag.name).to eq(values['name'])
-    expect(tag.account_id).to eq(values['account_id'])
-    expect(tag.state).to eq(values['state'])
-
-    expect(tag.created_at).to eq(DateTime.parse(values['created_at'])) unless values.fetch('created_at', '').strip.empty?
-    expect(tag.updated_at).to eq(DateTime.parse(values['updated_at'])) unless values.fetch('updated_at', '').strip.empty?
-    expect(tag.deleted_at).to eq(DateTime.parse(values['deleted_at'])) unless values.fetch('deleted_at', '').strip.empty?
-  end
-
-  def validate_tags(tags, values)
-    tags.each_with_index do |tag, index|
-      validate_tag(tag, values[index])
-    end
-  end
-
-  def validate_subscription(subscription, value)
-    expect(subscription.id).to eq(value['id'])
-    expect(subscription.state).to eq(value['state'])
-    expect(subscription.source).to eq(value['source'])
-    expect(subscription.referrer).to eq(value['referrer'])
-    expect(subscription.subscribable_id).to eq(value['subscribable_id'])
-    expect(subscription.subscribable_type).to eq(value['subscribable_type'])
-    expect(subscription.subscriber_id).to eq(value.dig('subscriber', 'id'))
-    expect(subscription.created_at).to eq(DateTime.parse(value['created_at'])) unless value.fetch('created_at', '').strip.empty?
   end
 end
