@@ -1,5 +1,5 @@
 describe ConvertKit::Resources::TagSubscriptionResponse do
-  include Validators::TagsValidators
+  include Validators::TagsValidator
 
   describe '#initialize' do
     it 'sets the id and state' do

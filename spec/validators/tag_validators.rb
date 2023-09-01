@@ -1,5 +1,5 @@
 module Validators
-  module TagsValidators
+  module TagsValidator
     def validate_tag(tag, values)
       expect(tag.id).to eq(values['id'])
       expect(tag.name).to eq(values['name'])

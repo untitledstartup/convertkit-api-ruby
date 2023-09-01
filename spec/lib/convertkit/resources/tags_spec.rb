@@ -1,5 +1,5 @@
 describe ConvertKit::Resources::Tags do
-  include Validators::TagsValidators
+  include Validators::TagsValidator
 
   let(:client) { double('client') }
 

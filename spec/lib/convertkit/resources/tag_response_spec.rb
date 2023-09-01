@@ -1,5 +1,5 @@
 describe ConvertKit::Resources::TagResponse do
-  include Validators::TagsValidators
+  include Validators::TagsValidator
 
   describe '#initialize' do
     let(:response3) { { 'id' => 2, 'name' => 'test_tag_name', 'created_at' => '2023-08-09T04:30:00Z', updated_at: '2023-08-19T04:30:00Z'} }
