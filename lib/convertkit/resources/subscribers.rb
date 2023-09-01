@@ -52,6 +52,16 @@ module ConvertKit
         response = @client.put('unsubscribe', { email: subscriber_email})
         SubscriberResponse.new(response)
       end
+
+      # Get a list of tags for a subscriber
+      # See https://developers.convertkit.com/#list-tags-for-a-subscriber for details
+      # @param [Integer] subscriber_id
+      def get_tags_for_subscriber(subscriber_id)
+        response = @client.get("#{PATH}/#{subscriber_id}/tags")
+        response['tags'].map do |tag|
+          TagResponse.new(tag)
+        end
+      end
     end
   end
 end

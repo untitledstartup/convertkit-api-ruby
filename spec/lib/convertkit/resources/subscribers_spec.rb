@@ -1,5 +1,6 @@
 describe ConvertKit::Resources::Subscribers do
   include Validators::SubscriberValidators
+  include Validators::TagValidators
 
   let(:client) { double('client') }
 
@@ -94,6 +95,30 @@ describe ConvertKit::Resources::Subscribers do
       expect(client).to receive(:put).with('unsubscribe', { email: 'test@test.com' }).and_return(response)
       subscriber_response = subscribers.unsubscribe_subscriber('test@test.com')
       validate_subscriber(subscriber_response, response)
+    end
+  end
+
+  describe '#get_tags_for_subscriber' do
+    let(:subscribers) { ConvertKit::Resources::Subscribers.new(client) }
+
+    it 'returns a list of tags for a subscriber' do
+      response = {
+        'tags' => [
+          {
+            'id' => 2,
+            'name' => 'tag1_name',
+            'created_at' => '2023-08-09T04:30:00Z'
+          },
+          {
+            'id' => 3,
+            'name' => 'tag2_name',
+            'created_at' => '2023-08-11T04:30:00Z'
+          }
+        ]
+      }
+      expect(client).to receive(:get).with('subscribers/1/tags').and_return(response)
+      tags_response = subscribers.get_tags_for_subscriber(1)
+      validate_tags(tags_response, response['tags'])
     end
   end
 end
