@@ -1,14 +1,19 @@
-describe ConvertKit::Resources::SubscribersResponse do
+describe ConvertKit::Resources::Subscribers do
   include Validators::SubscriberValidators
 
-  describe '#initialize' do
-    it 'set with an empty list of subscribers' do
-      response = { 'total_subscribers' => 0, 'page' => 1, 'total_pages' => 1, 'subscribers' => [] }
-      tag_response = ConvertKit::Resources::SubscribersResponse.new(response)
-      validate_subscribers(tag_response, response)
-    end
+  let(:client) { double('client') }
 
-    it 'set with a list of subscribers' do
+  describe '#initialize' do
+    it 'sets the client' do
+      account = ConvertKit::Resources::Subscribers.new(client)
+      expect(account.instance_variable_get(:@client)).to be(client)
+    end
+  end
+
+  describe '#get_subscribers' do
+    let(:subscribers) { ConvertKit::Resources::Subscribers.new(client) }
+
+    it 'returns a list of subscribers' do
       response = {
         'total_subscribers' => 2,
         'page' => 1,
@@ -32,7 +37,8 @@ describe ConvertKit::Resources::SubscribersResponse do
           }
         ]
       }
-      subscribers_response = ConvertKit::Resources::SubscribersResponse.new(response)
+      expect(client).to receive(:get).with('subscribers', {}).and_return(response)
+      subscribers_response = subscribers.get_subscribers
       validate_subscribers(subscribers_response, response)
     end
   end
