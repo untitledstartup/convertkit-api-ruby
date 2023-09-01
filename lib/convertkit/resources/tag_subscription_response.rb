@@ -7,7 +7,7 @@ module ConvertKit
                     :referrer,
                     :subscribable_id,
                     :subscribable_type,
-                    :subscriber_id,
+                    :subscriber,
                     :created_at
 
       def initialize(response)
@@ -17,8 +17,8 @@ module ConvertKit
         @referrer = response['referrer']
         @subscribable_id = response['subscribable_id']
         @subscribable_type = response['subscribable_type']
-        @subscriber_id = response.dig('subscriber', 'id')
         @created_at = ConvertKit::Utils.to_datetime(response['created_at'])
+        @subscriber = ConvertKit::Resources::SubscriberResponse.new(response['subscriber']) if response['subscriber']
       end
     end
   end
