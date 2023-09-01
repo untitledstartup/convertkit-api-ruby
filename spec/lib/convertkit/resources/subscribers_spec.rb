@@ -78,4 +78,22 @@ describe ConvertKit::Resources::Subscribers do
       validate_subscriber(subscriber_response, response)
     end
   end
+
+  describe '#unsubscribe_subscriber' do
+    let(:subscribers) { ConvertKit::Resources::Subscribers.new(client) }
+
+    it 'updates a subscriber' do
+      response = {
+        'id' => 1,
+        'first_name' => 'first_name',
+        'email_address' => 'test@test.com',
+        'state' => 'active',
+        'created_at' => '2023-08-09T04:30:00Z',
+        'fields' => { 'last_name' => 'subscriber_last_name' }
+      }
+      expect(client).to receive(:put).with('unsubscribe', { email: 'test@test.com' }).and_return(response)
+      subscriber_response = subscribers.unsubscribe_subscriber('test@test.com')
+      validate_subscriber(subscriber_response, response)
+    end
+  end
 end

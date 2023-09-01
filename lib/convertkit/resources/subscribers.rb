@@ -44,6 +44,14 @@ module ConvertKit
         response = @client.put("#{PATH}/#{subscriber_id}", request_options)
         SubscriberResponse.new(response)
       end
+
+      # Unsubscribe an email address from all forms and sequences
+      # See https://developers.convertkit.com/#unsubscribe-subscriber for details
+      # @param [String] subscriber_email
+      def unsubscribe_subscriber(subscriber_email)
+        response = @client.put('unsubscribe', { email: subscriber_email})
+        SubscriberResponse.new(response)
+      end
     end
   end
 end
