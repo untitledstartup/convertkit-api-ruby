@@ -54,6 +54,13 @@ module ConvertKit
 
         TagResponse.new(response)
       end
+
+      def get_tag_subscriptions(tag_id, options = {})
+        request_options = options.slice(:sort_order, :subscriber_state, :page)
+        response = @client.get("#{PATH}/#{tag_id}/subscriptions", request_options)
+
+        TagSubscriptionsResponse.new(response)
+      end
     end
   end
 end

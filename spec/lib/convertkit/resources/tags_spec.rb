@@ -96,4 +96,41 @@ describe ConvertKit::Resources::Tags do
       validate_tag(tag_response, response)
     end
   end
+
+  describe '#get_tag_subscriptions' do
+    let(:tags) { ConvertKit::Resources::Tags.new(client) }
+
+    it 'returns a list of tag subscriptions' do
+      response = {
+        'total_subscriptions' => 2,
+        'page' => 1,
+        'total_pages' => 1,
+        'subscriptions' => [
+          {
+            'id' => 2,
+            'state' => 'active',
+            'source' => 'source',
+            'referrer' => 'referrer',
+            'subscribable_id' => 1,
+            'subscribable_type' => 'tag',
+            'created_at' => '2023-08-09T04:30:00Z',
+            'subscriber' => { 'id' => 1}
+          },
+          {
+            'id' => 3,
+            'state' => 'active',
+            'source' => 'source',
+            'referrer' => 'referrer',
+            'subscribable_id' => 1,
+            'subscribable_type' => 'tag',
+            'created_at' => '2023-08-09T04:30:00Z',
+            'subscriber' => { 'id' => 2}
+          }
+        ]
+      }
+      expect(client).to receive(:get).with('tags/1/subscriptions', {}).and_return(response)
+      tag_subscriptions_response = tags.get_tag_subscriptions(1)
+      validate_tag_subscriptions(tag_subscriptions_response, response)
+    end
+  end
 end
