@@ -23,6 +23,14 @@ module ConvertKit
         response = @client.get(PATH, request_options)
         SubscribersResponse.new(response)
       end
+
+      # Returns data for a single subscriber
+      # See https://developers.convertkit.com/#view-a-single-subscriber for details
+      # @param [Integer] subscriber_id
+      def get_subscriber(subscriber_id)
+        response = @client.get("#{PATH}/#{subscriber_id}")
+        SubscriberResponse.new(response)
+      end
     end
   end
 end

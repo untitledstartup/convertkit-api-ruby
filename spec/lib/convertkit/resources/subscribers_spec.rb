@@ -42,4 +42,22 @@ describe ConvertKit::Resources::Subscribers do
       validate_subscribers(subscribers_response, response)
     end
   end
+
+  describe '#get_subscriber' do
+    let(:subscribers) { ConvertKit::Resources::Subscribers.new(client) }
+
+    it 'returns a subscriber' do
+      response = {
+        'id' => 1,
+        'first_name' => 'subscriber_first_name',
+        'email_address' => 'test@test.com',
+        'state' => 'active',
+        'created_at' => '2023-08-09T04:30:00Z',
+        'fields' => { 'last_name' => 'subscriber_last_name' }
+      }
+      expect(client).to receive(:get).with('subscribers/1').and_return(response)
+      subscriber_response = subscribers.get_subscriber(1)
+      validate_subscriber(subscriber_response, response)
+    end
+  end
 end
