@@ -31,6 +31,19 @@ module ConvertKit
         response = @client.get("#{PATH}/#{subscriber_id}")
         SubscriberResponse.new(response)
       end
+
+      # Update the information of a subscriber
+      # See https://developers.convertkit.com/#update-subscriber for details
+      # @param [Integer] subscriber_id
+      # @param [Hash] options
+      # @option options [String] :first_name Subscriber's first name
+      # @option options [String] :email_address Subscriber's email address
+      # @option options [Hash] :fields  Key value pairs for existing custom fields
+      def update_subscriber(subscriber_id, options = {})
+        request_options = options.slice(:first_name, :email_address, :fields)
+        response = @client.put("#{PATH}/#{subscriber_id}", request_options)
+        SubscriberResponse.new(response)
+      end
     end
   end
 end
