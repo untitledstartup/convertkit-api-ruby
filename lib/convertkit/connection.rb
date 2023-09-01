@@ -5,7 +5,7 @@ module ConvertKit
   class Connection
 
     MIME_TYPE = 'application/json'.freeze
-    HTTP_METHODS = %i(get post delete).freeze
+    HTTP_METHODS = %i(get post delete put).freeze
 
     def initialize(url, options = {})
       @url = url

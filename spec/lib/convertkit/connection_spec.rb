@@ -61,4 +61,22 @@ describe ConvertKit::Connection do
       ConvertKit::Connection.new(url).delete('test_path', {hash: 'request_hash'})
     end
   end
+
+  describe '#put' do
+    let!(:connection) { double('connection') }
+    let!(:env) { double('Env', body: '{"message":"response_hash"}') }
+    let!(:response) { double('response', env: env ) }
+
+    before do
+      allow(Faraday).to receive(:new).and_return(connection)
+      allow(response).to receive(:body).and_return(response.env.body)
+    end
+
+    it 'calls the get method on the connection' do
+      expect(connection).to receive(:put).with('test_path', '{"hash":"request_hash"}').and_return(response)
+      allow(env).to receive(:body=).with({"message" => "response_hash"})
+
+      ConvertKit::Connection.new(url).put('test_path', {hash: 'request_hash'})
+    end
+  end
 end
