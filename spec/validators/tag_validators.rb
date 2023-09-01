@@ -1,5 +1,5 @@
 module Validators
-  module TagsValidator
+  module TagValidators
     include Validators::SubscriberValidators
 
     def validate_tag(tag, values)

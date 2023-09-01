@@ -1,5 +1,5 @@
 describe ConvertKit::Resources::TagSubscriptionsResponse do
-  include Validators::TagsValidator
+  include Validators::TagValidators
 
   describe '#initialize' do
     it 'set with an empty list of subscriptions' do
