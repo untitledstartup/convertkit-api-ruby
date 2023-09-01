@@ -18,7 +18,7 @@ module ConvertKit
         @subscribable_id = response['subscribable_id']
         @subscribable_type = response['subscribable_type']
         @subscriber_id = response.dig('subscriber', 'id')
-        @created_at = DateTime.parse(response['created_at']) unless response.fetch('created_at', '').strip.empty?
+        @created_at = ConvertKit::Utils.to_datetime(response['created_at'])
       end
     end
   end

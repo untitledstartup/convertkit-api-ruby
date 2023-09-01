@@ -8,9 +8,9 @@ module ConvertKit
         @name = response['name']
         @account_id = response['account_id']
         @state = response['state']
-        @created_at = DateTime.parse(response['created_at']) unless response.fetch('created_at', '').strip.empty?
-        @updated_at = DateTime.parse(response['updated_at']) unless response.fetch('updated_at', '').strip.empty?
-        @deleted_at = DateTime.parse(response['deleted_at']) unless response.fetch('deleted_at', '').strip.empty?
+        @created_at = ConvertKit::Utils.to_datetime(response['created_at'])
+        @updated_at = ConvertKit::Utils.to_datetime(response['updated_at'])
+        @deleted_at = ConvertKit::Utils.to_datetime(response['deleted_at'])
       end
     end
   end
