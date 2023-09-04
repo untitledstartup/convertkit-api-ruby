@@ -18,6 +18,10 @@ module ConvertKit
       @tags ||= ConvertKit::Resources::Tags.new(self)
     end
 
+    def webhooks
+      @webhooks ||= ConvertKit::Resources::Webhooks.new(self)
+    end
+
 
     # Defined wrapper methods for ConvertKit Connection methods
     HTTP_METHODS.each do |method|

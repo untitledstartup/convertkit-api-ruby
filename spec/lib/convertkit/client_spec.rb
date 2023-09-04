@@ -37,6 +37,19 @@ describe ConvertKit::Client do
     end
   end
 
+  describe '#webhooks' do
+    let(:client) { ConvertKit::Client.new('test_token') }
+
+    before do
+      allow(ConvertKit::Connection).to receive(:new).and_return(connection)
+    end
+
+    it 'returns a webhooks resource' do
+      expect(client.webhooks).to be_a(ConvertKit::Resources::Webhooks)
+      expect(client.webhooks.instance_variable_get(:@client)).to be(client)
+    end
+  end
+
   describe '#get' do
     let(:client) { ConvertKit::Client.new('test_token') }
     let(:response) { double('response', success?: true, body: 'test_body') }
