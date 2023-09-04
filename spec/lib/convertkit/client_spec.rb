@@ -31,7 +31,7 @@ describe ConvertKit::Client do
       allow(ConvertKit::Connection).to receive(:new).and_return(connection)
     end
 
-    it 'returns an account resource' do
+    it 'returns a tags resource' do
       expect(client.tags).to be_a(ConvertKit::Resources::Tags)
       expect(client.tags.instance_variable_get(:@client)).to be(client)
     end
