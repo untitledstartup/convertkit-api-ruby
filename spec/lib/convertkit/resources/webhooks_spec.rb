@@ -24,4 +24,20 @@ describe ConvertKit::Resources::Webhooks do
       validate_webhook_rule(webhook_response, response)
     end
   end
+
+  describe '#delete_webhook' do
+    let(:webhooks) { ConvertKit::Resources::Webhooks.new(client) }
+
+    it 'deletes a webhook successfully' do
+      response = { 'success' => true }
+      expect(client).to receive(:delete).with('automations/hooks/1').and_return(response)
+      expect(webhooks.delete_webhook(1)).to eq(true)
+    end
+
+    it 'fails to delete a webhook' do
+      response = { 'success' => false }
+      expect(client).to receive(:delete).with('automations/hooks/1').and_return(response)
+      expect(webhooks.delete_webhook(1)).to eq(false)
+    end
+  end
 end

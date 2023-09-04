@@ -20,6 +20,15 @@ module ConvertKit
         response = @client.post(PATH, request_params)
         ConvertKit::Resources::WebhookRuleResponse.new(response)
       end
+
+      # Delete a webhook
+      # See https://developers.convertkit.com/#destroy-webhook for details
+      # @param [Integer] rule_id
+      def delete_webhook(rule_id)
+        response = @client.delete("#{PATH}/#{rule_id}")
+
+        response.fetch('success', false)
+      end
     end
   end
 end
