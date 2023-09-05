@@ -11,7 +11,7 @@ describe ConvertKit::Resources::Subscribers do
     end
   end
 
-  describe '#get_subscribers' do
+  describe '#list' do
     let(:subscribers) { ConvertKit::Resources::Subscribers.new(client) }
 
     it 'returns a list of subscribers' do
@@ -39,12 +39,12 @@ describe ConvertKit::Resources::Subscribers do
         ]
       }
       expect(client).to receive(:get).with('subscribers', {}).and_return(response)
-      subscribers_response = subscribers.get_subscribers
+      subscribers_response = subscribers.list
       validate_subscribers(subscribers_response, response)
     end
   end
 
-  describe '#get_subscriber' do
+  describe '#get' do
     let(:subscribers) { ConvertKit::Resources::Subscribers.new(client) }
 
     it 'returns a subscriber' do
@@ -57,12 +57,12 @@ describe ConvertKit::Resources::Subscribers do
         'fields' => { 'last_name' => 'subscriber_last_name' }
       }
       expect(client).to receive(:get).with('subscribers/1').and_return(response)
-      subscriber_response = subscribers.get_subscriber(1)
+      subscriber_response = subscribers.get(1)
       validate_subscriber(subscriber_response, response)
     end
   end
 
-  describe '#update_subscriber' do
+  describe '#update' do
     let(:subscribers) { ConvertKit::Resources::Subscribers.new(client) }
 
     it 'updates a subscriber' do
@@ -75,12 +75,12 @@ describe ConvertKit::Resources::Subscribers do
         'fields' => { 'last_name' => 'subscriber_last_name' }
       }
       expect(client).to receive(:put).with('subscribers/1', { first_name: 'updated_first_name' }).and_return(response)
-      subscriber_response = subscribers.update_subscriber(1, { first_name: 'updated_first_name' })
+      subscriber_response = subscribers.update(1, { first_name: 'updated_first_name' })
       validate_subscriber(subscriber_response, response)
     end
   end
 
-  describe '#unsubscribe_subscriber' do
+  describe '#unsubscribe' do
     let(:subscribers) { ConvertKit::Resources::Subscribers.new(client) }
 
     it 'updates a subscriber' do
@@ -93,12 +93,12 @@ describe ConvertKit::Resources::Subscribers do
         'fields' => { 'last_name' => 'subscriber_last_name' }
       }
       expect(client).to receive(:put).with('unsubscribe', { email: 'test@test.com' }).and_return(response)
-      subscriber_response = subscribers.unsubscribe_subscriber('test@test.com')
+      subscriber_response = subscribers.unsubscribe('test@test.com')
       validate_subscriber(subscriber_response, response)
     end
   end
 
-  describe '#get_tags_for_subscriber' do
+  describe '#list_tags' do
     let(:subscribers) { ConvertKit::Resources::Subscribers.new(client) }
 
     it 'returns a list of tags for a subscriber' do
@@ -117,7 +117,7 @@ describe ConvertKit::Resources::Subscribers do
         ]
       }
       expect(client).to receive(:get).with('subscribers/1/tags').and_return(response)
-      tags_response = subscribers.get_tags_for_subscriber(1)
+      tags_response = subscribers.list_tags(1)
       validate_tags(tags_response, response['tags'])
     end
   end
