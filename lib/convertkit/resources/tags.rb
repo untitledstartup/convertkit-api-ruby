@@ -53,7 +53,7 @@ module ConvertKit
 
         response = @client.post("#{PATH}/#{tag_id}/subscribe", request)
 
-        TagSubscriptionResponse.new(response)
+        SubscriptionResponse.new(response)
       end
 
       # Removes a tag from a subscriber.
@@ -87,7 +87,7 @@ module ConvertKit
         request_options = options.slice(:sort_order, :subscriber_state, :page)
         response = @client.get("#{PATH}/#{tag_id}/subscriptions", request_options)
 
-        TagSubscriptionsResponse.new(response)
+        SubscriptionsResponse.new(response)
       end
     end
   end
