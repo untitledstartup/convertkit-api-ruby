@@ -5,6 +5,7 @@ module ConvertKit
   class Connection
 
     MIME_TYPE = 'application/json'.freeze
+    HTTP_METHODS = %i(get post delete put).freeze
 
     def initialize(url, options = {})
       @url = url
@@ -14,14 +15,12 @@ module ConvertKit
       end
     end
 
-    def get(path, params = {})
-      response = @connection.get(path, process_request(params))
-      process_response(response)
-    end
-
-    def post(path, params = {})
-      response = @connection.post(path, process_request(params))
-      process_response(response)
+    # Defined wrapper methods for Faraday's HTTP methods
+    HTTP_METHODS.each do |method|
+      define_method(method) do |path, params = {}|
+        response = @connection.public_send(method, path, process_request(params))
+        process_response(response)
+      end
     end
 
     private

@@ -4,6 +4,8 @@ module ConvertKit
   # The ConvertKit OAuth class can be used to obtain this token.
   class Client
     API_URL = 'https://api.convertkit.com/alpha'.freeze # Using Alpha API as this is currently in active development
+    HTTP_METHODS = %i[get post delete put].freeze
+
     def initialize(auth_token)
       @connection = ConvertKit::Connection.new(API_URL, auth_token: auth_token)
     end
@@ -12,14 +14,17 @@ module ConvertKit
       @account ||= ConvertKit::Resources::Account.new(self)
     end
 
-    def get(path, params = {})
-      response = @connection.get(path, params)
-      handle_response(response)
+    def tags
+      @tags ||= ConvertKit::Resources::Tags.new(self)
     end
 
-    def post(path, params = {})
-      response = @connection.post(path, params)
-      handle_response(response)
+
+    # Defined wrapper methods for ConvertKit Connection methods
+    HTTP_METHODS.each do |method|
+      define_method(method) do |path, params = {}|
+        response = @connection.public_send(method, path, params)
+        handle_response(response)
+      end
     end
 
     private

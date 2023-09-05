@@ -24,6 +24,19 @@ describe ConvertKit::Client do
     end
   end
 
+  describe '#tags' do
+    let(:client) { ConvertKit::Client.new('test_token') }
+
+    before do
+      allow(ConvertKit::Connection).to receive(:new).and_return(connection)
+    end
+
+    it 'returns a tags resource' do
+      expect(client.tags).to be_a(ConvertKit::Resources::Tags)
+      expect(client.tags.instance_variable_get(:@client)).to be(client)
+    end
+  end
+
   describe '#get' do
     let(:client) { ConvertKit::Client.new('test_token') }
     let(:response) { double('response', success?: true, body: 'test_body') }
@@ -41,6 +54,26 @@ describe ConvertKit::Client do
     it 'calls the get method on the connection' do
       expect(client.instance_variable_get(:@connection)).to receive(:post).with('test_path', {}).and_return(response)
       expect(client.post('test_path')).to eq('test_body')
+    end
+  end
+
+  describe '#delete' do
+    let(:client) { ConvertKit::Client.new('test_token') }
+    let(:response) { double('response', success?: true, body: 'test_body') }
+
+    it 'calls the get method on the connection' do
+      expect(client.instance_variable_get(:@connection)).to receive(:delete).with('test_path', {}).and_return(response)
+      expect(client.delete('test_path')).to eq('test_body')
+    end
+  end
+
+  describe '#put' do
+    let(:client) { ConvertKit::Client.new('test_token') }
+    let(:response) { double('response', success?: true, body: 'test_body') }
+
+    it 'calls the get method on the connection' do
+      expect(client.instance_variable_get(:@connection)).to receive(:put).with('test_path', {}).and_return(response)
+      expect(client.put('test_path')).to eq('test_body')
     end
   end
 
