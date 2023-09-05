@@ -37,6 +37,19 @@ describe ConvertKit::Client do
     end
   end
 
+  describe '#custom_fields' do
+    let(:client) { ConvertKit::Client.new('test_token') }
+
+    before do
+      allow(ConvertKit::Connection).to receive(:new).and_return(connection)
+    end
+
+    it 'returns a custom fields resource' do
+      expect(client.custom_fields).to be_a(ConvertKit::Resources::CustomFields)
+      expect(client.custom_fields.instance_variable_get(:@client)).to be(client)
+    end
+  end
+
   describe '#get' do
     let(:client) { ConvertKit::Client.new('test_token') }
     let(:response) { double('response', success?: true, body: 'test_body') }
