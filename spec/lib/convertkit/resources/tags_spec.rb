@@ -10,7 +10,7 @@ describe ConvertKit::Resources::Tags do
     end
   end
 
-  describe '#get_tags' do
+  describe '#list' do
     let(:tags) { ConvertKit::Resources::Tags.new(client) }
     let(:created_at) { '2023-08-09T04:30:00Z'}
     let(:response) { { 'tags' => [
@@ -20,19 +20,19 @@ describe ConvertKit::Resources::Tags do
 
     it 'calls the get method on the client' do
       expect(client).to receive(:get).with('tags').and_return(response)
-      tags_response = tags.get_tags
+      tags_response = tags.list
       validate_tags(tags_response, response['tags'])
     end
   end
 
-  describe '#create_tag' do
+  describe '#create' do
     let(:tags) { ConvertKit::Resources::Tags.new(client) }
 
     context 'when name is a string' do
       it 'creates a tag' do
         response = { 'id' => 1, 'name' => 'tag_name', account_id: 1, state: 'available', 'created_at' => '2023-08-09T04:30:00Z', updated_at: '2023-08-09T04:30:00Z'}
         expect(client).to receive(:post).with('tags', {tag: {name: 'tag_name'}}).and_return(response)
-        tags_response = tags.create_tag('tag_name')
+        tags_response = tags.create('tag_name')
         validate_tag(tags_response, response)
       end
     end
@@ -44,13 +44,13 @@ describe ConvertKit::Resources::Tags do
           { 'id' => 2, 'name' => 'tag_name2', account_id: 1, state: 'available', 'created_at' => '2023-08-10T04:30:00Z', updated_at: '2023-08-10T04:30:00Z'}
         ]
         expect(client).to receive(:post).with('tags', {tag: [{name: 'tag_name1'}, {name: 'tag_name2'}]}).and_return(response)
-        tags_response = tags.create_tag(%w[tag_name1 tag_name2])
+        tags_response = tags.create(%w[tag_name1 tag_name2])
         validate_tags(tags_response, response)
       end
     end
   end
 
-  describe '#tag_subscriber' do
+  describe '#add_to_subscriber' do
     let(:tags) { ConvertKit::Resources::Tags.new(client) }
 
     it 'tags a subscriber' do
@@ -68,36 +68,36 @@ describe ConvertKit::Resources::Tags do
         { email: 'test_email', first_name: 'name', fields: { field_key: 'field_value' }, tags:[1,2]}
       ).and_return(response)
 
-      subscription_response = tags.tag_subscriber(1, 'test_email', options)
+      subscription_response = tags.add_to_subscriber(1, 'test_email', options)
       validate_tag_subscription(subscription_response, response)
     end
   end
 
-  describe '#remove_tag_from_subscriber' do
+  describe '#remove_from_subscriber' do
     let(:tags) { ConvertKit::Resources::Tags.new(client) }
 
     it 'removes a tag from a subscriber' do
       response = { 'id' => 1, 'name' => 'test_tag_name', 'created_at' => '2023-08-09T04:30:00Z' }
       expect(client).to receive(:delete).with('subscribers/3/tags/1').and_return(response)
 
-      tag_response = tags.remove_tag_from_subscriber(1, 3)
+      tag_response = tags.remove_from_subscriber(1, 3)
       validate_tag(tag_response, response)
     end
   end
 
-  describe '#remove_tag_from_subscriber_by_email' do
+  describe '#remove_from_subscriber_by_email' do
     let(:tags) { ConvertKit::Resources::Tags.new(client) }
 
     it 'removes a tag from a subscriber' do
       response = { 'id' => 1, 'name' => 'test_tag_name', 'created_at' => '2023-08-09T04:30:00Z' }
       expect(client).to receive(:post).with('tags/1/unsubscribe', { email: 'test@test.com' }).and_return(response)
 
-      tag_response = tags.remove_tag_from_subscriber_by_email(1, 'test@test.com')
+      tag_response = tags.remove_from_subscriber_by_email(1, 'test@test.com')
       validate_tag(tag_response, response)
     end
   end
 
-  describe '#get_tag_subscriptions' do
+  describe '#subscriptions' do
     let(:tags) { ConvertKit::Resources::Tags.new(client) }
 
     it 'returns a list of tag subscriptions' do
@@ -129,7 +129,7 @@ describe ConvertKit::Resources::Tags do
         ]
       }
       expect(client).to receive(:get).with('tags/1/subscriptions', {}).and_return(response)
-      tag_subscriptions_response = tags.get_tag_subscriptions(1)
+      tag_subscriptions_response = tags.subscriptions(1)
       validate_tag_subscriptions(tag_subscriptions_response, response)
     end
   end
