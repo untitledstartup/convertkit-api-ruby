@@ -47,4 +47,14 @@ describe ConvertKit::Resources::CustomFields do
       validate_custom_fields(custom_fields_response, response)
     end
   end
+
+  describe '#update' do
+    let(:custom_fields) { ConvertKit::Resources::CustomFields.new(client) }
+    let(:response) { double('response', success?: true) }
+
+    it 'updates a custom field' do
+      expect(client).to receive(:put).with('custom_fields/1', label: 'Updated Last Name').and_return(response)
+      expect(custom_fields.update(1, 'Updated Last Name')).to be true
+    end
+  end
 end

@@ -31,6 +31,17 @@ module ConvertKit
           CustomFieldResponse.new(response)
         end
       end
+
+      # Updates a custom field label for the account
+      # Warning: An update to a custom field will break all the liquid personalization tags in emails that reference it.
+      # See https://developers.convertkit.com/#update-field for details
+      # @param [Integer] id The id of the custom field to update
+      # @param [String] label The new label for the custom field
+      def update(id, label)
+        response = @client.put("#{PATH}/#{id}", label: label)
+
+        response.success?
+      end
     end
   end
 end
