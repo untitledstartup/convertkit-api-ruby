@@ -11,7 +11,7 @@ module ConvertKit
       # See https://developers.convertkit.com/#create-a-webhook for details
       # @param [String] target_url Url to receive the subscriber data when an event occurs
       # @param [Hash] event JSON object containing the event name and extra information when applicable
-      def create_webhook(target_url, event)
+      def create(target_url, event)
         request_params = {
           target_url: target_url,
           event: event
@@ -24,7 +24,7 @@ module ConvertKit
       # Delete a webhook
       # See https://developers.convertkit.com/#destroy-webhook for details
       # @param [Integer] rule_id
-      def delete_webhook(rule_id)
+      def delete(rule_id)
         response = @client.delete("#{PATH}/#{rule_id}")
 
         response.fetch('success', false)
