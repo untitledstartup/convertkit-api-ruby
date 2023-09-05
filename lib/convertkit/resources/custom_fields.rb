@@ -42,6 +42,16 @@ module ConvertKit
 
         response.success?
       end
+
+      # Deletes a custom field from the account.
+      # This will remove all data in this field from your subscribers.
+      # See https://developers.convertkit.com/#destroy-field for details
+      # @param [Integer] id The id of the custom field to delete
+      def delete(id)
+        response = @client.delete("#{PATH}/#{id}")
+
+        response.success?
+      end
     end
   end
 end

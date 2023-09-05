@@ -57,4 +57,14 @@ describe ConvertKit::Resources::CustomFields do
       expect(custom_fields.update(1, 'Updated Last Name')).to be true
     end
   end
+
+  describe '#delete' do
+    let(:custom_fields) { ConvertKit::Resources::CustomFields.new(client) }
+    let(:response) { double('response', success?: true) }
+
+    it 'deletes a custom field' do
+      expect(client).to receive(:delete).with('custom_fields/1').and_return(response)
+      expect(custom_fields.delete(1)).to be true
+    end
+  end
 end
