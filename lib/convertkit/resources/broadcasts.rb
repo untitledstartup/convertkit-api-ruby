@@ -38,6 +38,14 @@ module ConvertKit
 
         ConvertKit::Resources::BroadcastResponse.new(response)
       end
+
+      # Retrieve a broadcast by id.
+      # See https://developers.convertkit.com/#retrieve-a-specific-broadcast for details.
+      # @param id [Integer] The id of the broadcast to retrieve.
+      def get(id)
+        response = @client.get("#{PATH}/#{id}")
+        ConvertKit::Resources::BroadcastResponse.new(response)
+      end
     end
   end
 end

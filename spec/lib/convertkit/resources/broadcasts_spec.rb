@@ -57,4 +57,29 @@ describe ConvertKit::Resources::Broadcasts do
       validate_broadcast(broadcast_response, response)
     end
   end
+
+  describe '#get' do
+    let(:broadcasts) { ConvertKit::Resources::Broadcasts.new(client) }
+
+    it 'retrieves a broadcast' do
+      response = {
+        'id' => 1,
+        'subject' => 'Test Broadcast 1',
+        'description' => 'A weekly newsletter for testing',
+        'content' => 'This is the content of the newsletter',
+        'public' => true,
+        'email_address' => 'test@test.com',
+        'email_layout_template' => 'Text Only',
+        'thumbnail_url' => 'https://test.com/test.png',
+        'thumbnail_alt' => 'Test Image',
+        'created_at' => '2023-09-05T00:00:00Z',
+        'published_at' => '2023-09-06T00:00:00Z',
+        'send_at' => '2023-09-06T00:00:00Z',
+      }
+
+      expect(client).to receive(:get).with('broadcasts/1').and_return(response)
+      broadcast_response = broadcasts.get(1)
+      validate_broadcast(broadcast_response, response)
+    end
+  end
 end
