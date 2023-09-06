@@ -36,7 +36,7 @@ describe ConvertKit::Resources::Sequences do
         'subscribable_id' => 2,
         'subscribable_type' => 'course',
         'subscriber' => { 'id' => 3 },
-        'created_at' => '2023-08-09T04:30:00Z'
+        'created_at' => '2023-09-05T00:00:00Z'
       }
       options = {first_name: 'name', fields: { field_key: 'field_value' }, tags: [1,2]}
       expect(client).to receive(:post).with(
@@ -46,6 +46,43 @@ describe ConvertKit::Resources::Sequences do
 
       subscription_response = sequences.add_subscriber(1, 'test_email', options)
       validate_subscription(subscription_response, response)
+    end
+  end
+
+  describe '#subscriptions' do
+    let(:sequences) { ConvertKit::Resources::Sequences.new(client) }
+
+    it 'returns a list of subscriptions' do
+      response = {
+        'total_subscriptions' => 2,
+        'page' => 1,
+        'total_pages' => 1,
+        'subscriptions' => [
+          {
+            'id' => 2,
+            'state' => 'active',
+            'source' => 'source',
+            'referrer' => 'referrer',
+            'subscribable_id' => 1,
+            'subscribable_type' => 'Course',
+            'created_at' => '2023-09-05T00:00:00Z',
+            'subscriber' => { 'id' => 1}
+          },
+          {
+            'id' => 3,
+            'state' => 'active',
+            'source' => 'source',
+            'referrer' => 'referrer',
+            'subscribable_id' => 1,
+            'subscribable_type' => 'Course',
+            'created_at' => '2023-09-05T00:00:00Z',
+            'subscriber' => { 'id' => 2}
+          }
+        ]
+      }
+      expect(client).to receive(:get).with('sequences/1/subscriptions', {}).and_return(response)
+      subscriptions_response = sequences.subscriptions(1)
+      validate_subscriptions(subscriptions_response, response)
     end
   end
 end

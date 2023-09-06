@@ -38,6 +38,20 @@ module ConvertKit
 
         ConvertKit::Resources::SubscriptionResponse.new(response)
       end
+
+      # Returns a list of subscriptions to a sequence.
+      # See https://developers.convertkit.com/#list-subscriptions-to-a-sequence for details
+      # @param [Integer] id Sequence ID
+      # @param [Hash] options
+      # @option options [String] :sort_order Possible values are 'asc' or 'desc'
+      # @option options [String] :subscriber_state Possible values are 'active', or 'cancelled'
+      # @option options [Integer] :page Page number to return. Each page returns 50 results. The default value is 1.
+      def subscriptions(id, options = {})
+        request_options = options.slice(:sort_order, :subscriber_state, :page)
+        response = @client.get("#{PATH}/#{id}/subscriptions", request_options)
+
+        ConvertKit::Resources::SubscriptionsResponse.new(response)
+      end
     end
   end
 end

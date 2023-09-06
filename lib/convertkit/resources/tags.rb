@@ -80,9 +80,9 @@ module ConvertKit
       # See https://developers.convertkit.com/#list-subscriptions-to-a-tag for details.
       # @param [Integer] tag_id
       # @param [Hash] options
-      # @option options [String] :sort_order  Can value the values 'asc' or 'desc'
-      # @option options [String] :subscriber_state  Can value the values 'active' or 'cancelled'
-      # @option options [Integer] :page  Page number to return. Each page returns 50 results.
+      # @option options [String] :sort_order  Possible values are 'asc' or 'desc'
+      # @option options [String] :subscriber_state  Possible values are 'active' or 'cancelled'
+      # @option options [Integer] :page  Page number to return. Each page returns 50 results. The default value is 1.
       def subscriptions(tag_id, options = {})
         request_options = options.slice(:sort_order, :subscriber_state, :page)
         response = @client.get("#{PATH}/#{tag_id}/subscriptions", request_options)
