@@ -18,6 +18,26 @@ module ConvertKit
           ConvertKit::Resources::BroadcastResponse.new(broadcast)
         end
       end
+
+      # Create a draft or a scheduled broadcast. A scheduled broadcast requires at least a subject and content.
+      # See https://developers.convertkit.com/#create-a-broadcast for details.
+      # @param options [Hash] The options to create a broadcast with.
+      # @option options [String] :content The broadcast's email content in text or simple HTML.
+      # @option options [String] :description The internal description of the broadcast.
+      # @option options [String] :email_address Sending email address for the broadcast. The accounts default email address is used if not provided.
+      # @option options [String] :email_layout_template The email layout template to use for the broadcast. Defaults to the account email layout template.
+      # @option options [Boolean] :public Whether the broadcast is public or not.
+      # @option options [DateTime] :published_at The date and time the broadcast should be published. Only applicable to public broadcasts.
+      # @option options [DateTime] :send_at The date and time the broadcast should be sent. Leave blank to create a draft.
+      # @option options [String] :subject The subject of the broadcast email.
+      # @option options [String] :thumbnail_alt The alt text for the public thumbnail image.
+      # @option options [String] :thumbnail_url The URL for the thumbnail image to accompany public broadcast.
+      def create(options= {})
+        request_options = options.slice(:content, :description, :email_address, :email_layout_template, :public, :published_at, :send_at, :subject, :thumbnail_alt, :thumbnail_url).compact
+        response = @client.post(PATH, request_options)
+
+        ConvertKit::Resources::BroadcastResponse.new(response)
+      end
     end
   end
 end
