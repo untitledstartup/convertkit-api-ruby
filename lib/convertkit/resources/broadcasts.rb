@@ -27,8 +27,8 @@ module ConvertKit
       # @option options [String] :email_address Sending email address for the broadcast. The accounts default email address is used if not provided.
       # @option options [String] :email_layout_template The email layout template to use for the broadcast. Defaults to the account email layout template.
       # @option options [Boolean] :public Whether the broadcast is public or not.
-      # @option options [DateTime] :published_at The date and time the broadcast should be published. Only applicable to public broadcasts.
-      # @option options [DateTime] :send_at The date and time the broadcast should be sent. Leave blank to create a draft.
+      # @option options [String] :published_at The date and time the broadcast should be published. Only applicable to public broadcasts.
+      # @option options [String] :send_at The date and time the broadcast should be sent. Leave blank to create a draft.
       # @option options [String] :subject The subject of the broadcast email.
       # @option options [String] :thumbnail_alt The alt text for the public thumbnail image.
       # @option options [String] :thumbnail_url The URL for the thumbnail image to accompany public broadcast.
@@ -36,7 +36,7 @@ module ConvertKit
         request_options = options.slice(:content, :description, :email_address, :email_layout_template, :public, :published_at, :send_at, :subject, :thumbnail_alt, :thumbnail_url).compact
         response = @client.post(PATH, request_options)
 
-        ConvertKit::Resources::BroadcastResponse.new(response)
+        ConvertKit::Resources::BroadcastResponse.new(response['broadcast'])
       end
 
       # Retrieve a broadcast by id.
@@ -44,12 +44,33 @@ module ConvertKit
       # @param id [Integer] The id of the broadcast to retrieve.
       def get(id)
         response = @client.get("#{PATH}/#{id}")
-        ConvertKit::Resources::BroadcastResponse.new(response)
+        ConvertKit::Resources::BroadcastResponse.new(response['broadcast'])
       end
 
       def stats(id)
         response = @client.get("#{PATH}/#{id}/stats")
         ConvertKit::Resources::BroadcastStatsResponse.new(response['broadcast'])
+      end
+
+      # Update a broadcast by id. Broadcasts that are being sent or have been sent cannot be updated.
+      # See https://developers.convertkit.com/#update-a-broadcast for details.
+      # @param id [Integer] The id of the broadcast to update.
+      # @param options [Hash] The options to create a broadcast with.
+      # @option options [String] :content The broadcast's email content in text or simple HTML.
+      # @option options [String] :description The internal description of the broadcast.
+      # @option options [String] :email_address Sending email address for the broadcast. The accounts default email address is used if not provided.
+      # @option options [String] :email_layout_template The email layout template to use for the broadcast. Defaults to the account email layout template.
+      # @option options [Boolean] :public Whether the broadcast is public or not.
+      # @option options [String] :published_at The date and time the broadcast should be published. Only applicable to public broadcasts.
+      # @option options [String] :send_at The date and time the broadcast should be sent. Leave blank to create a draft.
+      # @option options [String] :subject The subject of the broadcast email.
+      # @option options [String] :thumbnail_alt The alt text for the public thumbnail image.
+      # @option options [String] :thumbnail_url The URL for the thumbnail image to accompany public broadcast.
+      def update(id, options= {})
+        request_options = options.slice(:content, :description, :email_address, :email_layout_template, :public, :published_at, :send_at, :subject, :thumbnail_alt, :thumbnail_url).compact
+        response = @client.put("#{PATH}/#{id}", request_options)
+
+        ConvertKit::Resources::BroadcastResponse.new(response['broadcast'])
       end
     end
   end

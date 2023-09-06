@@ -32,18 +32,20 @@ describe ConvertKit::Resources::Broadcasts do
 
     it 'creates a broadcast' do
       response = {
-        'id' => 1,
-        'subject' => 'Test Broadcast 1',
-        'description' => 'A weekly newsletter for testing',
-        'content' => 'This is the content of the newsletter',
-        'public' => true,
-        'email_address' => 'test@test.com',
-        'email_layout_template' => 'Text Only',
-        'thumbnail_url' => 'https://test.com/test.png',
-        'thumbnail_alt' => 'Test Image',
-        'created_at' => '2023-09-05T00:00:00Z',
-        'published_at' => '2023-09-06T00:00:00Z',
-        'send_at' => '2023-09-06T00:00:00Z',
+        'broadcast' => {
+          'id' => 1,
+          'subject' => 'Test Broadcast 1',
+          'description' => 'A weekly newsletter for testing',
+          'content' => 'This is the content of the newsletter',
+          'public' => true,
+          'email_address' => 'test@test.com',
+          'email_layout_template' => 'Text Only',
+          'thumbnail_url' => 'https://test.com/test.png',
+          'thumbnail_alt' => 'Test Image',
+          'created_at' => '2023-09-05T00:00:00Z',
+          'published_at' => '2023-09-06T00:00:00Z',
+          'send_at' => '2023-09-06T00:00:00Z',
+        }
       }
 
       request = {
@@ -54,7 +56,7 @@ describe ConvertKit::Resources::Broadcasts do
 
       expect(client).to receive(:post).with('broadcasts', request).and_return(response)
       broadcast_response = broadcasts.create(request)
-      validate_broadcast(broadcast_response, response)
+      validate_broadcast(broadcast_response, response['broadcast'])
     end
   end
 
@@ -63,23 +65,25 @@ describe ConvertKit::Resources::Broadcasts do
 
     it 'retrieves a broadcast' do
       response = {
-        'id' => 1,
-        'subject' => 'Test Broadcast 1',
-        'description' => 'A weekly newsletter for testing',
-        'content' => 'This is the content of the newsletter',
-        'public' => true,
-        'email_address' => 'test@test.com',
-        'email_layout_template' => 'Text Only',
-        'thumbnail_url' => 'https://test.com/test.png',
-        'thumbnail_alt' => 'Test Image',
-        'created_at' => '2023-09-05T00:00:00Z',
-        'published_at' => '2023-09-06T00:00:00Z',
-        'send_at' => '2023-09-06T00:00:00Z',
+        'broadcast' => {
+          'id' => 1,
+          'subject' => 'Test Broadcast 1',
+          'description' => 'A weekly newsletter for testing',
+          'content' => 'This is the content of the newsletter',
+          'public' => true,
+          'email_address' => 'test@test.com',
+          'email_layout_template' => 'Text Only',
+          'thumbnail_url' => 'https://test.com/test.png',
+          'thumbnail_alt' => 'Test Image',
+          'created_at' => '2023-09-05T00:00:00Z',
+          'published_at' => '2023-09-06T00:00:00Z',
+          'send_at' => '2023-09-06T00:00:00Z'
+        }
       }
 
       expect(client).to receive(:get).with('broadcasts/1').and_return(response)
       broadcast_response = broadcasts.get(1)
-      validate_broadcast(broadcast_response, response)
+      validate_broadcast(broadcast_response, response['broadcast'])
     end
   end
 
@@ -104,8 +108,40 @@ describe ConvertKit::Resources::Broadcasts do
       }
 
       expect(client).to receive(:get).with('broadcasts/1/stats').and_return(response)
-      broadcast_stas_response = broadcasts.stats(1)
-      validate_broadcast_stats(broadcast_stas_response, response['broadcast'])
+      broadcast_stats_response = broadcasts.stats(1)
+      validate_broadcast_stats(broadcast_stats_response, response['broadcast'])
+    end
+  end
+
+  describe "#update" do
+    let(:broadcasts) { ConvertKit::Resources::Broadcasts.new(client) }
+
+    it 'updates a broadcast' do
+      response = {
+        'broadcast' => {
+          'id' => 1,
+          'subject' => 'Test Broadcast 1',
+          'description' => 'A weekly newsletter for testing',
+          'content' => 'This is the content of the newsletter',
+          'public' => true,
+          'email_address' => 'test@test.com',
+          'email_layout_template' => 'Text Only',
+          'thumbnail_url' => 'https://test.com/test.png',
+          'thumbnail_alt' => 'Test Image',
+          'created_at' => '2023-09-05T00:00:00Z',
+          'published_at' => '2023-09-06T00:00:00Z',
+          'send_at' => '2023-09-06T00:00:00Z',
+        }
+      }
+
+      request = {
+        content: 'Update content for the newsletter',
+        subject: 'Test Broadcast 1 updated'
+      }
+
+      expect(client).to receive(:put).with('broadcasts/1', request).and_return(response)
+      broadcast_response = broadcasts.update(1, request)
+      validate_broadcast(broadcast_response, response['broadcast'])
     end
   end
 end
