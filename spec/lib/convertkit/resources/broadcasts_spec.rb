@@ -144,4 +144,14 @@ describe ConvertKit::Resources::Broadcasts do
       validate_broadcast(broadcast_response, response['broadcast'])
     end
   end
+
+  describe "#delete" do
+    let(:broadcasts) { ConvertKit::Resources::Broadcasts.new(client) }
+    let(:response) { double('response', success?: true) }
+
+    it 'deletes a broadcast' do
+      expect(client).to receive(:delete).with('broadcasts/1').and_return(response)
+      expect(broadcasts.delete(1)).to be(true)
+    end
+  end
 end

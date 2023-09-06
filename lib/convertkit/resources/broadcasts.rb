@@ -47,6 +47,9 @@ module ConvertKit
         ConvertKit::Resources::BroadcastResponse.new(response['broadcast'])
       end
 
+      # Retrieve broadcast stats by id.
+      # See https://developers.convertkit.com/#get-stats for details.
+      # @param id [Integer] The id of the broadcast to retrieve stats for.
       def stats(id)
         response = @client.get("#{PATH}/#{id}/stats")
         ConvertKit::Resources::BroadcastStatsResponse.new(response['broadcast'])
@@ -71,6 +74,15 @@ module ConvertKit
         response = @client.put("#{PATH}/#{id}", request_options)
 
         ConvertKit::Resources::BroadcastResponse.new(response['broadcast'])
+      end
+
+      # Delete a broadcast by id. Broadcasts that are being sent or have been sent cannot be deleted.
+      # See https://developers.convertkit.com/#destroy-a-broadcast for details.
+      # @param id [Integer] The id of the broadcast to delete.
+      def delete(id)
+        response = @client.delete("#{PATH}/#{id}")
+
+        response.success?
       end
     end
   end
