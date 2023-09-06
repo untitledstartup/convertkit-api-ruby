@@ -1,6 +1,6 @@
 module ConvertKit
   module Resources
-    class TagSubscriptionResponse
+    class SubscriptionResponse
       attr_accessor :id,
                     :state,
                     :source,

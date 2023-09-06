@@ -1,11 +1,11 @@
-describe ConvertKit::Resources::TagSubscriptionResponse do
-  include Validators::TagValidators
+describe ConvertKit::Resources::SubscriptionResponse do
+  include Validators::SubscriptionValidators
 
   describe '#initialize' do
     it 'sets the id and state' do
       response = { 'id' => 1, 'state' => 'active'}
-      tag_response = ConvertKit::Resources::TagSubscriptionResponse.new(response)
-      validate_tag_subscription(tag_response, response)
+      subscription_response = ConvertKit::Resources::SubscriptionResponse.new(response)
+      validate_subscription(subscription_response, response)
     end
 
     it 'sets the id, state, source, referrer, subscribable_id, subscribable_type, subscriber_id, created_at' do
@@ -19,8 +19,8 @@ describe ConvertKit::Resources::TagSubscriptionResponse do
         'created_at' => '2023-08-09T04:30:00Z',
         'subscriber' => { 'id' => 4}
       }
-      tag_response = ConvertKit::Resources::TagSubscriptionResponse.new(response)
-      validate_tag_subscription(tag_response, response)
+      subscription_response = ConvertKit::Resources::SubscriptionResponse.new(response)
+      validate_subscription(subscription_response, response)
     end
   end
 end

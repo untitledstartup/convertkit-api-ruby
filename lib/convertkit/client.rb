@@ -18,6 +18,18 @@ module ConvertKit
       @tags ||= ConvertKit::Resources::Tags.new(self)
     end
 
+    def subscribers
+      @subscribers ||= ConvertKit::Resources::Subscribers.new(self)
+    end
+
+    def sequences
+      @sequences ||= ConvertKit::Resources::Sequences.new(self)
+    end
+
+    def custom_fields
+      @custom_fields ||= ConvertKit::Resources::CustomFields.new(self)
+    end
+
     def broadcasts
       @broadcasts ||= ConvertKit::Resources::Broadcasts.new(self)
     end

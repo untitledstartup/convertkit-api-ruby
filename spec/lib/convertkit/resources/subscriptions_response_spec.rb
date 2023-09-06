@@ -1,11 +1,11 @@
-describe ConvertKit::Resources::TagSubscriptionsResponse do
-  include Validators::TagValidators
+describe ConvertKit::Resources::SubscriptionsResponse do
+  include Validators::SubscriptionValidators
 
   describe '#initialize' do
     it 'set with an empty list of subscriptions' do
       response = { 'total_subscriptions' => 0, 'page' => 1, 'total_pages' => 1, 'subscriptions' => [] }
-      tag_response = ConvertKit::Resources::TagSubscriptionsResponse.new(response)
-      validate_tag_subscriptions(tag_response, response)
+      subscriptions_response = ConvertKit::Resources::SubscriptionsResponse.new(response)
+      validate_subscriptions(subscriptions_response, response)
     end
 
     it 'set with a list of subscriptions' do
@@ -36,8 +36,8 @@ describe ConvertKit::Resources::TagSubscriptionsResponse do
           }
         ]
       }
-      tag_response = ConvertKit::Resources::TagSubscriptionsResponse.new(response)
-      validate_tag_subscriptions(tag_response, response)
+      subscriptions_response = ConvertKit::Resources::SubscriptionsResponse.new(response)
+      validate_subscriptions(subscriptions_response, response)
     end
   end
 end
