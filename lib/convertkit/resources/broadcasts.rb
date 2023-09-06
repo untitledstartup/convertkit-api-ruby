@@ -46,6 +46,11 @@ module ConvertKit
         response = @client.get("#{PATH}/#{id}")
         ConvertKit::Resources::BroadcastResponse.new(response)
       end
+
+      def stats(id)
+        response = @client.get("#{PATH}/#{id}/stats")
+        ConvertKit::Resources::BroadcastStatsResponse.new(response['broadcast'])
+      end
     end
   end
 end

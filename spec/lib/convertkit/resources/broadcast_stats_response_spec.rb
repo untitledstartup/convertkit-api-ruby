@@ -14,7 +14,8 @@ describe ConvertKit::Resources::BroadcastStatsResponse do
             'show_total_clicks' => false,
             'status' => 'completed',
             'progress' => 100.0
-          }}
+          }
+      }
       broadcast_stats_response = ConvertKit::Resources::BroadcastStatsResponse.new(response)
       validate_broadcast_stats(broadcast_stats_response, response)
     end

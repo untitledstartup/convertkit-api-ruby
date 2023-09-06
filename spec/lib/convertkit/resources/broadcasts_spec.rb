@@ -82,4 +82,30 @@ describe ConvertKit::Resources::Broadcasts do
       validate_broadcast(broadcast_response, response)
     end
   end
+
+  describe '#stats' do
+    let(:broadcasts) { ConvertKit::Resources::Broadcasts.new(client) }
+
+    it 'retrieves a broadcasts stats' do
+      response = {
+        'broadcast' => {
+          'id' => 1,
+          'stats' => {
+            'recipients' => 10,
+            'open_rate' => 80.1,
+            'click_rate' => 40.23,
+            'unsubscribes' => 'This is the content of the newsletter',
+            'total_clicks' => 4,
+            'show_total_clicks' => false,
+            'status' => 'completed',
+            'progress' => 100.0
+          }
+        }
+      }
+
+      expect(client).to receive(:get).with('broadcasts/1/stats').and_return(response)
+      broadcast_stas_response = broadcasts.stats(1)
+      validate_broadcast_stats(broadcast_stas_response, response['broadcast'])
+    end
+  end
 end
