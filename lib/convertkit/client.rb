@@ -26,6 +26,10 @@ module ConvertKit
       @sequences ||= ConvertKit::Resources::Sequences.new(self)
     end
 
+    def custom_fields
+      @custom_fields ||= ConvertKit::Resources::CustomFields.new(self)
+    end
+
     # Defined wrapper methods for ConvertKit Connection methods
     HTTP_METHODS.each do |method|
       define_method(method) do |path, params = {}|
