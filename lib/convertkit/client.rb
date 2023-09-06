@@ -18,6 +18,9 @@ module ConvertKit
       @tags ||= ConvertKit::Resources::Tags.new(self)
     end
 
+    def subscribers
+      @subscribers ||= ConvertKit::Resources::Subscribers.new(self)
+    end
 
     # Defined wrapper methods for ConvertKit Connection methods
     HTTP_METHODS.each do |method|
