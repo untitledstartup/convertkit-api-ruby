@@ -22,6 +22,10 @@ module ConvertKit
       @subscribers ||= ConvertKit::Resources::Subscribers.new(self)
     end
 
+    def sequences
+      @sequences ||= ConvertKit::Resources::Sequences.new(self)
+    end
+
     # Defined wrapper methods for ConvertKit Connection methods
     HTTP_METHODS.each do |method|
       define_method(method) do |path, params = {}|
