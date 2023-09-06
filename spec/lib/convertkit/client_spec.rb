@@ -37,6 +37,32 @@ describe ConvertKit::Client do
     end
   end
 
+  describe '#subscribers' do
+    let(:client) { ConvertKit::Client.new('test_token') }
+
+    before do
+      allow(ConvertKit::Connection).to receive(:new).and_return(connection)
+    end
+
+    it 'returns a subscribers resource' do
+      expect(client.subscribers).to be_a(ConvertKit::Resources::Subscribers)
+      expect(client.subscribers.instance_variable_get(:@client)).to be(client)
+    end
+  end
+
+  describe '#sequences' do
+    let(:client) { ConvertKit::Client.new('test_token') }
+
+    before do
+      allow(ConvertKit::Connection).to receive(:new).and_return(connection)
+    end
+
+    it 'returns a sequences resource' do
+      expect(client.sequences).to be_a(ConvertKit::Resources::Sequences)
+      expect(client.sequences.instance_variable_get(:@client)).to be(client)
+    end
+  end
+
   describe '#custom_fields' do
     let(:client) { ConvertKit::Client.new('test_token') }
 

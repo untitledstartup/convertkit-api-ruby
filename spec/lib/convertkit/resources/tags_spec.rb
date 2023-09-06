@@ -1,5 +1,6 @@
 describe ConvertKit::Resources::Tags do
   include Validators::TagValidators
+  include Validators::SubscriptionValidators
 
   let(:client) { double('client') }
 
@@ -69,7 +70,7 @@ describe ConvertKit::Resources::Tags do
       ).and_return(response)
 
       subscription_response = tags.add_to_subscriber(1, 'test_email', options)
-      validate_tag_subscription(subscription_response, response)
+      validate_subscription(subscription_response, response)
     end
   end
 
@@ -130,7 +131,7 @@ describe ConvertKit::Resources::Tags do
       }
       expect(client).to receive(:get).with('tags/1/subscriptions', {}).and_return(response)
       tag_subscriptions_response = tags.subscriptions(1)
-      validate_tag_subscriptions(tag_subscriptions_response, response)
+      validate_subscriptions(tag_subscriptions_response, response)
     end
   end
 end
