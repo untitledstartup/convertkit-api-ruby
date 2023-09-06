@@ -25,5 +25,11 @@ module Validators
       expect(broadcast_stats.status).to eq(values['stats']['status'])
       expect(broadcast_stats.progress).to eq(values['stats']['progress'])
     end
+
+    def validate_broadcasts(broadcasts, values)
+      broadcasts.each_with_index do |broadcast, index|
+        validate_broadcast(broadcast, values[index])
+      end
+    end
   end
 end
