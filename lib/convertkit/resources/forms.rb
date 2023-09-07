@@ -8,7 +8,7 @@ module ConvertKit
       end
 
       # Returns a list of forms
-      # See https://developers.convertkit.com/v4_alpha.html?shell#get__alpha_account for details
+      # See https://developers.convertkit.com/v4_alpha.html?shell#get__alpha_forms for details
       def list
         response = @client.get(PATH)
 
