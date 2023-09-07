@@ -48,7 +48,7 @@ module ConvertKit
       # @option options [Integer] :tax The tax applied to the purchase
       # @option options [String] :transaction_time The time of the transaction. Defaults to the current timestamp.
       # @option options [Integer] :shipping The shipping cost of the purchase
-      # @option options [String] :subscriber Whether the purchaser is a subscriber
+      # @option options [String] :subscriber
       def create(transaction_id, email, currency, subtotal, total, products= [], options= {})
         purchase_options = options.slice(*(%i[first_name integration status discount tax transaction_time shipping subscriber]))
 
