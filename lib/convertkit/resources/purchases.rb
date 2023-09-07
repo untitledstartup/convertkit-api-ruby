@@ -15,6 +15,15 @@ module ConvertKit
 
         PurchasesResponse.new(response)
       end
+
+      # Returns a single purchase for the account
+      # See https://developers.convertkit.com/v4_alpha.html?shell#get_alpha_purchases-id for details
+      # @param [Integer] id The id of the purchase to retrieve
+      def get(id)
+        response = @client.get("#{PATH}/#{id}")
+
+        PurchaseResponse.new(response)
+      end
     end
   end
 end
