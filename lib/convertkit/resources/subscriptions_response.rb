@@ -1,6 +1,6 @@
 module ConvertKit
   module Resources
-    class TagSubscriptionsResponse
+    class SubscriptionsResponse
       attr_accessor :subscriptions, :total_subscriptions, :page, :total_pages
 
       def initialize(response)
@@ -8,7 +8,7 @@ module ConvertKit
         @page = response['page']
         @total_pages = response['total_pages']
         @subscriptions = response['subscriptions'].map do |subscription|
-          ConvertKit::Resources::TagSubscriptionResponse.new(subscription)
+          ConvertKit::Resources::SubscriptionResponse.new(subscription)
         end
       end
     end
