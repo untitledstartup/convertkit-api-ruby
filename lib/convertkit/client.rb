@@ -30,6 +30,10 @@ module ConvertKit
       @custom_fields ||= ConvertKit::Resources::CustomFields.new(self)
     end
 
+    def webhooks
+      @webhooks ||= ConvertKit::Resources::Webhooks.new(self)
+    end
+
     # Defined wrapper methods for ConvertKit Connection methods
     HTTP_METHODS.each do |method|
       define_method(method) do |path, params = {}|
