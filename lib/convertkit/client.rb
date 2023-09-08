@@ -30,6 +30,14 @@ module ConvertKit
       @custom_fields ||= ConvertKit::Resources::CustomFields.new(self)
     end
 
+    def webhooks
+      @webhooks ||= ConvertKit::Resources::Webhooks.new(self)
+    end
+
+    def forms
+      @forms ||= ConvertKit::Resources::Forms.new(self)
+    end
+
     def broadcasts
       @broadcasts ||= ConvertKit::Resources::Broadcasts.new(self)
     end
