@@ -38,6 +38,10 @@ module ConvertKit
       @forms ||= ConvertKit::Resources::Forms.new(self)
     end
 
+    def broadcasts
+      @broadcasts ||= ConvertKit::Resources::Broadcasts.new(self)
+    end
+
     # Defined wrapper methods for ConvertKit Connection methods
     HTTP_METHODS.each do |method|
       define_method(method) do |path, params = {}|
