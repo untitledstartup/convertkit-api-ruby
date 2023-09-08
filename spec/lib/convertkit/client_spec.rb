@@ -115,6 +115,19 @@ describe ConvertKit::Client do
     end
   end
 
+  describe '#purchass' do
+    let(:client) { ConvertKit::Client.new('test_token') }
+
+    before do
+      allow(ConvertKit::Connection).to receive(:new).and_return(connection)
+    end
+
+    it 'returns a purchases resource' do
+      expect(client.purchases).to be_a(ConvertKit::Resources::Purchases)
+      expect(client.purchases.instance_variable_get(:@client)).to be(client)
+    end
+  end
+
   describe '#get' do
     let(:client) { ConvertKit::Client.new('test_token') }
     let(:response) { double('response', success?: true, body: 'test_body') }

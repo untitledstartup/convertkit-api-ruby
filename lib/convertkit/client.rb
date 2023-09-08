@@ -42,6 +42,10 @@ module ConvertKit
       @broadcasts ||= ConvertKit::Resources::Broadcasts.new(self)
     end
 
+    def purchases
+      @purchases ||= ConvertKit::Resources::Purchases.new(self)
+    end
+
     # Defined wrapper methods for ConvertKit Connection methods
     HTTP_METHODS.each do |method|
       define_method(method) do |path, params = {}|
