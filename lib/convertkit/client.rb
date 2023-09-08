@@ -34,6 +34,14 @@ module ConvertKit
       @webhooks ||= ConvertKit::Resources::Webhooks.new(self)
     end
 
+    def forms
+      @forms ||= ConvertKit::Resources::Forms.new(self)
+    end
+
+    def broadcasts
+      @broadcasts ||= ConvertKit::Resources::Broadcasts.new(self)
+    end
+
     def purchases
       @purchases ||= ConvertKit::Resources::Purchases.new(self)
     end
