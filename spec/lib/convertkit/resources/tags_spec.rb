@@ -32,21 +32,9 @@ describe ConvertKit::Resources::Tags do
     context 'when name is a string' do
       it 'creates a tag' do
         response = { 'id' => 1, 'name' => 'tag_name', account_id: 1, state: 'available', 'created_at' => '2023-08-09T04:30:00Z', updated_at: '2023-08-09T04:30:00Z'}
-        expect(client).to receive(:post).with('tags', {tag: {name: 'tag_name'}}).and_return(response)
+        expect(client).to receive(:post).with('tags', {name: 'tag_name'}).and_return(response)
         tags_response = tags.create('tag_name')
         validate_tag(tags_response, response)
-      end
-    end
-
-    context 'when name is an array' do
-      it 'creates tags' do
-        response = [
-          { 'id' => 1, 'name' => 'tag_name1', account_id: 1, state: 'available', 'created_at' => '2023-08-09T04:30:00Z', updated_at: '2023-08-09T04:30:00Z'},
-          { 'id' => 2, 'name' => 'tag_name2', account_id: 1, state: 'available', 'created_at' => '2023-08-10T04:30:00Z', updated_at: '2023-08-10T04:30:00Z'}
-        ]
-        expect(client).to receive(:post).with('tags', {tag: [{name: 'tag_name1'}, {name: 'tag_name2'}]}).and_return(response)
-        tags_response = tags.create(%w[tag_name1 tag_name2])
-        validate_tags(tags_response, response)
       end
     end
   end

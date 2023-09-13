@@ -18,21 +18,12 @@ module ConvertKit
       end
 
       # Creates a new tag for the account.
-      # See https://developers.convertkit.com/#create-a-tag for details
-      # @param [String, Array<String>] name
+      # See https://developers.convertkit.com/v4_alpha.html#post__alpha_tags for details
+      # @param [String] name
       def create(name)
-        is_array = name.is_a? Array
-        request = is_array ? name.map { |n| { name: n } } : { name: name }
+        response = @client.post(PATH, { name: name })
 
-        response = @client.post(PATH, {tag: request})
-
-        if is_array
-          response.map do |tag|
-            TagResponse.new(tag)
-          end
-        else
-          TagResponse.new(response)
-        end
+        TagResponse.new(response)
       end
 
       # Tags a subscriber with the given email address.
