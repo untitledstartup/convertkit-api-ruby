@@ -62,21 +62,59 @@ describe ConvertKit::Resources::Subscribers do
     end
   end
 
+  describe '#create' do
+    let(:subscribers) { ConvertKit::Resources::Subscribers.new(client) }
+
+    it 'creates a subscriber with just an email' do
+      response = {
+        'subscriber' => {
+          'id' => 1,
+          'first_name' => nil,
+          'email_address' => 'test@test.com',
+          'state' => 'active',
+          'fields' => {},
+        }
+      }
+
+      expect(client).to receive(:post).with('subscribers', { email_address: 'test@test.com' }).and_return(response)
+      subscriber_response = subscribers.create('test@test.com')
+      validate_subscriber(subscriber_response, response['subscriber'])
+    end
+
+    it 'creates a subscriber with an email and first name' do
+      response = {
+        'subscriber' => {
+          'id' => 1,
+          'first_name' => 'test first name',
+          'email_address' => 'test@test.com',
+          'state' => 'active',
+          'fields' => {},
+        }
+      }
+
+      expect(client).to receive(:post).with('subscribers', { email_address: 'test@test.com', first_name: 'test first name' }).and_return(response)
+      subscriber_response = subscribers.create('test@test.com', { first_name: 'test first name' })
+      validate_subscriber(subscriber_response, response['subscriber'])
+    end
+  end
+
   describe '#update' do
     let(:subscribers) { ConvertKit::Resources::Subscribers.new(client) }
 
     it 'updates a subscriber' do
       response = {
-        'id' => 1,
-        'first_name' => 'updated_first_name',
-        'email_address' => 'test@test.com',
-        'state' => 'active',
-        'created_at' => '2023-08-09T04:30:00Z',
-        'fields' => { 'last_name' => 'subscriber_last_name' }
+        'subscriber' => {
+          'id' => 1,
+          'first_name' => 'updated_first_name',
+          'email_address' => 'test@test.com',
+          'state' => 'active',
+          'created_at' => '2023-08-09T04:30:00Z',
+          'fields' => { 'last_name' => 'subscriber_last_name' }
+        }
       }
       expect(client).to receive(:put).with('subscribers/1', { first_name: 'updated_first_name' }).and_return(response)
       subscriber_response = subscribers.update(1, { first_name: 'updated_first_name' })
-      validate_subscriber(subscriber_response, response)
+      validate_subscriber(subscriber_response, response['subscriber'])
     end
   end
 

@@ -32,8 +32,24 @@ module ConvertKit
         SubscriberResponse.new(response)
       end
 
+      # Create a new subscriber
+      # See https://developers.convertkit.com/v4_alpha.html#post__alpha_subscribers
+      # @param [String] email Subscriber's email address
+      # @param [Hash] options
+      # @option options [String] :first_name Subscriber's first name
+      def create(email, options = {})
+        request_options = {
+          email_address: email,
+          first_name: options[:first_name],
+        }.compact
+
+        response = @client.post(PATH, request_options)
+
+        SubscriberResponse.new(response['subscriber'])
+      end
+
       # Update the information of a subscriber
-      # See https://developers.convertkit.com/#update-subscriber for details
+      # See https://developers.convertkit.com/v4_alpha.html?shell#put_alpha_subscribers-id for details
       # @param [Integer] subscriber_id
       # @param [Hash] options
       # @option options [String] :first_name Subscriber's first name
@@ -42,7 +58,7 @@ module ConvertKit
       def update(subscriber_id, options = {})
         request_options = options.slice(:first_name, :email_address, :fields)
         response = @client.put("#{PATH}/#{subscriber_id}", request_options)
-        SubscriberResponse.new(response)
+        SubscriberResponse.new(response['subscriber'])
       end
 
       # Unsubscribe an email address from all forms and sequences
