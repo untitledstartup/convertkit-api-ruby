@@ -18,14 +18,15 @@ module ConvertKit
     # Defined wrapper methods for Faraday's HTTP methods
     HTTP_METHODS.each do |method|
       define_method(method) do |path, params = {}|
-        response = @connection.public_send(method, path, process_request(params))
+        response = @connection.public_send(method, path, process_request(method, params))
         process_response(response)
       end
     end
 
     private
 
-    def process_request(params)
+    def process_request(method, params)
+      return params if method == :get
       return params if params.empty?
 
       JSON.generate(params)
