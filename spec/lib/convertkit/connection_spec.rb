@@ -19,7 +19,7 @@ describe ConvertKit::Connection do
     end
 
     it 'calls the get method on the connection' do
-      expect(connection).to receive(:get).with('test_path', '{"hash":"request_hash"}').and_return(response)
+      expect(connection).to receive(:get).with('test_path', {hash: 'request_hash'}).and_return(response)
       allow(env).to receive(:body=).with({"message" => "response_hash"})
 
       ConvertKit::Connection.new(url).get('test_path', {hash: 'request_hash'})
