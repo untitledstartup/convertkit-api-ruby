@@ -98,6 +98,48 @@ describe ConvertKit::Resources::Subscribers do
     end
   end
 
+  describe '#bulk_create' do
+    let(:subscribers) { ConvertKit::Resources::Subscribers.new(client) }
+
+    it 'raise an error when an array is not passed in' do
+      expect { subscribers.bulk_create(nil) }.to raise_error(ArgumentError, 'subscribers must be an array')
+      expect { subscribers.bulk_create('test') }.to raise_error(ArgumentError, 'subscribers must be an array')
+      expect { subscribers.bulk_create(123) }.to raise_error(ArgumentError, 'subscribers must be an array')
+      expect { subscribers.bulk_create({ email_address: 'test@test.com' }) }.to raise_error(ArgumentError, 'subscribers must be an array')
+    end
+
+    it 'creates a list of subscribers' do
+      response = {
+        'subscribers' => [
+          {
+            'id' => 1,
+            'first_name' => 'john',
+            'email_address' => 'john@test.com',
+            'state' => 'active',
+            'fields' => {},
+          },
+          {
+            'id' => 2,
+            'first_name' => 'jane',
+            'email_address' => 'jane@test.com',
+            'state' => 'active',
+            'fields' => {},
+          }
+        ],
+        'failures' => []
+      }
+
+      request = [
+        { first_name: 'john', email_address: 'john@test.com' },
+        { first_name: 'jane', email_address: 'jane@test.com' }
+      ]
+
+      expect(client).to receive(:post).with('bulk/subscribers', subscribers: request).and_return(response)
+      bulk_create_response = subscribers.bulk_create(request)
+      validate_bulk_create(bulk_create_response, response)
+    end
+  end
+
   describe '#update' do
     let(:subscribers) { ConvertKit::Resources::Subscribers.new(client) }
 

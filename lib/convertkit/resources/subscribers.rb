@@ -48,6 +48,18 @@ module ConvertKit
         SubscriberResponse.new(response['subscriber'])
       end
 
+      # Create multiple subscribers (an upsert operation).
+      # @param [Array<Hash>] subscribers
+      # @option subscribers [String] :email_address Subscriber's email address
+      # @option subscribers [String] :first_name Subscriber's first name
+      def bulk_create(subscribers = [])
+        raise ArgumentError, 'subscribers must be an array' unless subscribers.is_a?(Array)
+
+        response = @client.post("bulk/#{PATH}", { subscribers: subscribers })
+
+        SubscriberBulkCreateResponse.new(response)
+      end
+
       # Update the information of a subscriber
       # See https://developers.convertkit.com/v4_alpha.html?shell#put_alpha_subscribers-id for details
       # @param [Integer] subscriber_id
