@@ -73,12 +73,13 @@ module ConvertKit
         SubscriberResponse.new(response['subscriber'])
       end
 
-      # Unsubscribe an email address from all forms and sequences
-      # See https://developers.convertkit.com/#unsubscribe-subscriber for details
-      # @param [String] subscriber_email
-      def unsubscribe(subscriber_email)
-        response = @client.put('unsubscribe', { email: subscriber_email})
-        SubscriberResponse.new(response)
+      # Unsubscribe a subscriber
+      # See https://developers.convertkit.com/v4_alpha.html#post_alpha_subscribers-id-_unsubscribe
+      # @param [Integer] subscriber_id
+      def unsubscribe(subscriber_id)
+        response = @client.post("#{PATH}/#{subscriber_id}/unsubscribe")
+
+        response.success?
       end
 
       # Get a list of tags for a subscriber
