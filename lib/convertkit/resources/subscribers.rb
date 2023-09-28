@@ -77,7 +77,7 @@ module ConvertKit
       # See https://developers.convertkit.com/v4_alpha.html#post_alpha_subscribers-id-_unsubscribe
       # @param [Integer] subscriber_id
       def unsubscribe(subscriber_id)
-        response = @client.post("#{PATH}/#{subscriber_id}/unsubscribe")
+        response = @client.post("#{PATH}/#{subscriber_id}/unsubscribe", "", raw_response: true)
 
         response.success?
       end

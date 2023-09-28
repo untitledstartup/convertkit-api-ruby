@@ -165,7 +165,7 @@ describe ConvertKit::Resources::Subscribers do
     let(:response) { double('response', success?: true) }
 
     it 'unsubscribes a subscriber' do
-      expect(client).to receive(:post).with('subscribers/1/unsubscribe').and_return(response)
+      expect(client).to receive(:post).with('subscribers/1/unsubscribe', "", raw_response: true).and_return(response)
       expect(subscribers.unsubscribe(1)).to be(true)
     end
   end

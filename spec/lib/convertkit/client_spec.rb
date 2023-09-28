@@ -177,6 +177,10 @@ describe ConvertKit::Client do
       it 'returns the response body' do
         expect(client.send(:handle_response, response)).to eq('test_body')
       end
+
+      it 'returns the raw response' do
+        expect(client.send(:handle_response, response, raw_response: true)).to eq(response)
+      end
     end
 
     context 'when the response is not successful' do

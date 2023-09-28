@@ -48,17 +48,17 @@ module ConvertKit
 
     # Defined wrapper methods for ConvertKit Connection methods
     HTTP_METHODS.each do |method|
-      define_method(method) do |path, params = {}|
+      define_method(method) do |path, params = {}, raw_response: false|
         response = @connection.public_send(method, path, params)
-        handle_response(response)
+        handle_response(response, raw_response: raw_response)
       end
     end
 
     private
 
-    def handle_response(response)
+    def handle_response(response, raw_response: false)
       if response.success?
-        response.body
+        raw_response ? response: response.body
       else
         # TODO add more specific error handling with different error classes
         raise ConvertKit::APIError, "#{response.status}: #{response.body}"
