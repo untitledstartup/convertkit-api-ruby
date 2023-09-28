@@ -25,11 +25,11 @@ module ConvertKit
       end
 
       # Returns data for a single subscriber
-      # See https://developers.convertkit.com/#view-a-single-subscriber for details
+      # See https://developers.convertkit.com/v4_alpha.html#get_alpha_subscribers-id for details
       # @param [Integer] subscriber_id
       def get(subscriber_id)
         response = @client.get("#{PATH}/#{subscriber_id}")
-        SubscriberResponse.new(response)
+        SubscriberResponse.new(response['subscriber'])
       end
 
       # Create a new subscriber

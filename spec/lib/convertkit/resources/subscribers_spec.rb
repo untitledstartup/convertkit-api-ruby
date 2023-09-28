@@ -49,16 +49,18 @@ describe ConvertKit::Resources::Subscribers do
 
     it 'returns a subscriber' do
       response = {
-        'id' => 1,
-        'first_name' => 'subscriber_first_name',
-        'email_address' => 'test@test.com',
-        'state' => 'active',
-        'created_at' => '2023-08-09T04:30:00Z',
-        'fields' => { 'last_name' => 'subscriber_last_name' }
+        "subscriber" =>  {
+          'id' => 1,
+          'first_name' => 'subscriber_first_name',
+          'email_address' => 'test@test.com',
+          'state' => 'active',
+          'created_at' => '2023-08-09T04:30:00Z',
+          'fields' => { 'last_name' => 'subscriber_last_name' }
+        }
       }
       expect(client).to receive(:get).with('subscribers/1').and_return(response)
       subscriber_response = subscribers.get(1)
-      validate_subscriber(subscriber_response, response)
+      validate_subscriber(subscriber_response, response['subscriber'])
     end
   end
 
