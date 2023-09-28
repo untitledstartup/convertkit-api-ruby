@@ -18,5 +18,20 @@ module Validators
         validate_subscriber(subscriber, values['subscribers'][index])
       end
     end
+
+    def validate_bulk_create_failure(bulk_create_failure_response, values)
+      expect(bulk_create_failure_response.body).to eq(values['body'])
+      expect(bulk_create_failure_response.errors).to match_array(values['errors']) if values['errors']
+    end
+
+    def validate_bulk_create(bulk_create_response, values)
+      bulk_create_response.subscribers.each_with_index do |subscriber, index|
+        validate_subscriber(subscriber, values['subscribers'][index])
+      end
+
+      bulk_create_response.failures.each_with_index do |failure, index|
+        validate_bulk_create_failure(failure, values['failures'][index])
+      end
+    end
   end
 end
