@@ -25,11 +25,11 @@ module ConvertKit
       end
 
       # Returns data for a single subscriber
-      # See https://developers.convertkit.com/#view-a-single-subscriber for details
+      # See https://developers.convertkit.com/v4_alpha.html#get_alpha_subscribers-id for details
       # @param [Integer] subscriber_id
       def get(subscriber_id)
         response = @client.get("#{PATH}/#{subscriber_id}")
-        SubscriberResponse.new(response)
+        SubscriberResponse.new(response['subscriber'])
       end
 
       # Create a new subscriber
@@ -48,6 +48,18 @@ module ConvertKit
         SubscriberResponse.new(response['subscriber'])
       end
 
+      # Create multiple subscribers (an upsert operation).
+      # @param [Array<Hash>] subscribers
+      # @option subscribers [String] :email_address Subscriber's email address
+      # @option subscribers [String] :first_name Subscriber's first name
+      def bulk_create(subscribers = [])
+        raise ArgumentError, 'subscribers must be an array' unless subscribers.is_a?(Array)
+
+        response = @client.post("bulk/#{PATH}", { subscribers: subscribers })
+
+        SubscriberBulkCreateResponse.new(response)
+      end
+
       # Update the information of a subscriber
       # See https://developers.convertkit.com/v4_alpha.html?shell#put_alpha_subscribers-id for details
       # @param [Integer] subscriber_id
@@ -61,12 +73,13 @@ module ConvertKit
         SubscriberResponse.new(response['subscriber'])
       end
 
-      # Unsubscribe an email address from all forms and sequences
-      # See https://developers.convertkit.com/#unsubscribe-subscriber for details
-      # @param [String] subscriber_email
-      def unsubscribe(subscriber_email)
-        response = @client.put('unsubscribe', { email: subscriber_email})
-        SubscriberResponse.new(response)
+      # Unsubscribe a subscriber
+      # See https://developers.convertkit.com/v4_alpha.html#post_alpha_subscribers-id-_unsubscribe
+      # @param [Integer] subscriber_id
+      def unsubscribe(subscriber_id)
+        response = @client.post("#{PATH}/#{subscriber_id}/unsubscribe", '', raw_response: true)
+
+        response.success?
       end
 
       # Get a list of tags for a subscriber

@@ -49,16 +49,18 @@ describe ConvertKit::Resources::Subscribers do
 
     it 'returns a subscriber' do
       response = {
-        'id' => 1,
-        'first_name' => 'subscriber_first_name',
-        'email_address' => 'test@test.com',
-        'state' => 'active',
-        'created_at' => '2023-08-09T04:30:00Z',
-        'fields' => { 'last_name' => 'subscriber_last_name' }
+        "subscriber" =>  {
+          'id' => 1,
+          'first_name' => 'subscriber_first_name',
+          'email_address' => 'test@test.com',
+          'state' => 'active',
+          'created_at' => '2023-08-09T04:30:00Z',
+          'fields' => { 'last_name' => 'subscriber_last_name' }
+        }
       }
       expect(client).to receive(:get).with('subscribers/1').and_return(response)
       subscriber_response = subscribers.get(1)
-      validate_subscriber(subscriber_response, response)
+      validate_subscriber(subscriber_response, response['subscriber'])
     end
   end
 
@@ -98,6 +100,48 @@ describe ConvertKit::Resources::Subscribers do
     end
   end
 
+  describe '#bulk_create' do
+    let(:subscribers) { ConvertKit::Resources::Subscribers.new(client) }
+
+    it 'raise an error when an array is not passed in' do
+      expect { subscribers.bulk_create(nil) }.to raise_error(ArgumentError, 'subscribers must be an array')
+      expect { subscribers.bulk_create('test') }.to raise_error(ArgumentError, 'subscribers must be an array')
+      expect { subscribers.bulk_create(123) }.to raise_error(ArgumentError, 'subscribers must be an array')
+      expect { subscribers.bulk_create({ email_address: 'test@test.com' }) }.to raise_error(ArgumentError, 'subscribers must be an array')
+    end
+
+    it 'creates a list of subscribers' do
+      response = {
+        'subscribers' => [
+          {
+            'id' => 1,
+            'first_name' => 'john',
+            'email_address' => 'john@test.com',
+            'state' => 'active',
+            'fields' => {},
+          },
+          {
+            'id' => 2,
+            'first_name' => 'jane',
+            'email_address' => 'jane@test.com',
+            'state' => 'active',
+            'fields' => {},
+          }
+        ],
+        'failures' => []
+      }
+
+      request = [
+        { first_name: 'john', email_address: 'john@test.com' },
+        { first_name: 'jane', email_address: 'jane@test.com' }
+      ]
+
+      expect(client).to receive(:post).with('bulk/subscribers', subscribers: request).and_return(response)
+      bulk_create_response = subscribers.bulk_create(request)
+      validate_bulk_create(bulk_create_response, response)
+    end
+  end
+
   describe '#update' do
     let(:subscribers) { ConvertKit::Resources::Subscribers.new(client) }
 
@@ -120,19 +164,11 @@ describe ConvertKit::Resources::Subscribers do
 
   describe '#unsubscribe' do
     let(:subscribers) { ConvertKit::Resources::Subscribers.new(client) }
+    let(:response) { double('response', success?: true) }
 
-    it 'updates a subscriber' do
-      response = {
-        'id' => 1,
-        'first_name' => 'first_name',
-        'email_address' => 'test@test.com',
-        'state' => 'active',
-        'created_at' => '2023-08-09T04:30:00Z',
-        'fields' => { 'last_name' => 'subscriber_last_name' }
-      }
-      expect(client).to receive(:put).with('unsubscribe', { email: 'test@test.com' }).and_return(response)
-      subscriber_response = subscribers.unsubscribe('test@test.com')
-      validate_subscriber(subscriber_response, response)
+    it 'unsubscribes a subscriber' do
+      expect(client).to receive(:post).with('subscribers/1/unsubscribe', "", raw_response: true).and_return(response)
+      expect(subscribers.unsubscribe(1)).to be(true)
     end
   end
 
