@@ -48,15 +48,15 @@ module ConvertKit
 
     # Defined wrapper methods for ConvertKit Connection methods
     HTTP_METHODS.each do |method|
-      define_method(method) do |path, params = {}, raw_response: false|
+      define_method(method) do |path, params = {}, raw_response = false|
         response = @connection.public_send(method, path, params)
-        handle_response(response, raw_response: raw_response)
+        handle_response(response, raw_response)
       end
     end
 
     private
 
-    def handle_response(response, raw_response: false)
+    def handle_response(response, raw_response= false)
       if response.success?
         raw_response ? response: response.body
       else

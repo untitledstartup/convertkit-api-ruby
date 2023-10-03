@@ -143,8 +143,8 @@ describe ConvertKit::Client do
     let(:response) { double('response', success?: true, body: 'test_body') }
 
     it 'calls the get method on the connection' do
-      expect(client.instance_variable_get(:@connection)).to receive(:post).with('test_path', {}).and_return(response)
-      expect(client.post('test_path')).to eq('test_body')
+      expect(client.instance_variable_get(:@connection)).to receive(:post).with('test_path', {some: 'parameter'}).and_return(response)
+      expect(client.post('test_path', some: 'parameter')).to eq('test_body')
     end
   end
 
@@ -163,8 +163,8 @@ describe ConvertKit::Client do
     let(:response) { double('response', success?: true, body: 'test_body') }
 
     it 'calls the get method on the connection' do
-      expect(client.instance_variable_get(:@connection)).to receive(:put).with('test_path', {}).and_return(response)
-      expect(client.put('test_path')).to eq('test_body')
+      expect(client.instance_variable_get(:@connection)).to receive(:put).with('test_path', {some: 'parameter'}).and_return(response)
+      expect(client.put('test_path', {some: 'parameter'})).to eq('test_body')
     end
   end
 
@@ -179,7 +179,7 @@ describe ConvertKit::Client do
       end
 
       it 'returns the raw response' do
-        expect(client.send(:handle_response, response, raw_response: true)).to eq(response)
+        expect(client.send(:handle_response, response, true)).to eq(response)
       end
     end
 
