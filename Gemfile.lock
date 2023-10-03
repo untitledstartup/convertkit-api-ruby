@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    convertkit-api-ruby (0.0.4)
+    convertkit-api-ruby (0.0.5)
       faraday (>= 1.0, < 3.0)
 
 GEM
