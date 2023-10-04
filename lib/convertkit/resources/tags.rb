@@ -27,24 +27,20 @@ module ConvertKit
       end
 
       # Tags a subscriber with the given email address.
-      # See https://developers.convertkit.com/#tag-a-subscriber for details
+      # See https://developers.convertkit.com/v4_alpha.html#convertkit-api-api-alpha-tags-subscriber for details
       # @param [Integer] tag_id
-      # @param [String] email
       # @param [Hash] options
-      # @option options [String] :first_name Subscriber's first name
-      # @option options [Hash] :fields  Key value pairs for existing custom fields
-      # @option options [Array<Integer>] :tags Array of tag ids to subscribe to
-      def add_to_subscriber(tag_id, email, options = {})
+      # @option options [Integer] :id Subscriber Id
+      # @option options [String] :email_address  Subscriber's email address
+      def add_to_subscriber(tag_id, options = {})
         request = {
-          email: email,
-          first_name: options[:first_name],
-          fields: options[:fields],
-          tags: options[:tags]
+          email_address: options[:email_address],
+          id: options[:id]
         }.compact
 
-        response = @client.post("#{PATH}/#{tag_id}/subscribe", request)
+        response = @client.post("#{PATH}/#{tag_id}/subscribers", request, true)
 
-        SubscriptionResponse.new(response)
+        response.success?
       end
 
       # Removes a tag from a subscriber.

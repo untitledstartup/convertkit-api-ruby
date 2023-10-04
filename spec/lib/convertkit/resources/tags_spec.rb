@@ -41,24 +41,28 @@ describe ConvertKit::Resources::Tags do
 
   describe '#add_to_subscriber' do
     let(:tags) { ConvertKit::Resources::Tags.new(client) }
+    let(:response) { double('response', body: '', success?: true) }
 
-    it 'tags a subscriber' do
-      response = {
-        'id' => 1,
-        'state' => 'active',
-        'subscribable_id' => 2,
-        'subscribable_type' => 'tag',
-        'subscriber' => { 'id' => 3 },
-        'created_at' => '2023-08-09T04:30:00Z'
-      }
-      options = {first_name: 'name', fields: { field_key: 'field_value' }, tags:[1,2]}
+    it 'tags a subscriber by id' do
       expect(client).to receive(:post).with(
-        'tags/1/subscribe',
-        { email: 'test_email', first_name: 'name', fields: { field_key: 'field_value' }, tags:[1,2]}
+        'tags/1/subscribers',
+        { id: 2},
+        true
       ).and_return(response)
 
-      subscription_response = tags.add_to_subscriber(1, 'test_email', options)
-      validate_subscription(subscription_response, response)
+      subscription_response = tags.add_to_subscriber(1, {id: 2})
+      expect(subscription_response).to be(true)
+    end
+
+    it 'tags a subscriber by email' do
+      expect(client).to receive(:post).with(
+        'tags/1/subscribers',
+        { email_address: 'test@test.com'},
+        true
+      ).and_return(response)
+
+      subscription_response = tags.add_to_subscriber(1, {email_address: 'test@test.com'})
+      expect(subscription_response).to be(true)
     end
   end
 
@@ -72,7 +76,7 @@ describe ConvertKit::Resources::Tags do
       tag_response = tags.remove_from_subscriber(1, 3)
       validate_tag(tag_response, response)
     end
-  end
+    end
 
   describe '#remove_from_subscriber_by_email' do
     let(:tags) { ConvertKit::Resources::Tags.new(client) }
