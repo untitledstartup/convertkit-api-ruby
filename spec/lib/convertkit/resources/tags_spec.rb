@@ -76,7 +76,7 @@ describe ConvertKit::Resources::Tags do
       tag_response = tags.remove_from_subscriber(1, 3)
       validate_tag(tag_response, response)
     end
-    end
+  end
 
   describe '#remove_from_subscriber_by_email' do
     let(:tags) { ConvertKit::Resources::Tags.new(client) }
