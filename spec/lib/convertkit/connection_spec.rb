@@ -11,7 +11,7 @@ describe ConvertKit::Connection do
   describe '#get' do
     let!(:connection) { double('connection') }
     let!(:env) { double('Env', body: '{"message":"response_hash"}') }
-    let!(:response) { double('response', env: env ) }
+    let!(:response) { double('response', env: env, status: 200 ) }
 
     before do
       allow(Faraday).to receive(:new).and_return(connection)
@@ -29,7 +29,7 @@ describe ConvertKit::Connection do
   describe '#post' do
     let!(:connection) { double('connection') }
     let!(:env) { double('Env', body: '{"message":"response_hash"}') }
-    let!(:response) { double('response', env: env ) }
+    let!(:response) { double('response', env: env, status: 200 ) }
 
     before do
       allow(Faraday).to receive(:new).and_return(connection)
@@ -47,7 +47,7 @@ describe ConvertKit::Connection do
   describe '#delete' do
     let!(:connection) { double('connection') }
     let!(:env) { double('Env', body: '{"message":"response_hash"}') }
-    let!(:response) { double('response', env: env ) }
+    let!(:response) { double('response', env: env, status: 200 ) }
 
     before do
       allow(Faraday).to receive(:new).and_return(connection)
@@ -65,7 +65,7 @@ describe ConvertKit::Connection do
   describe '#put' do
     let!(:connection) { double('connection') }
     let!(:env) { double('Env', body: '{"message":"response_hash"}') }
-    let!(:response) { double('response', env: env ) }
+    let!(:response) { double('response', env: env, status: 200 ) }
 
     before do
       allow(Faraday).to receive(:new).and_return(connection)
