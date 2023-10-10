@@ -79,4 +79,49 @@ describe ConvertKit::Connection do
       ConvertKit::Connection.new(url).put('test_path', {hash: 'request_hash'})
     end
   end
+
+  describe 'when the response is not successful' do
+    let!(:connection) { double('connection') }
+
+    before do
+      allow(Faraday).to receive(:new).and_return(connection)
+
+    end
+
+    it 'raises an ResourceNotFoundError' do
+      message = '{"errors": "Data not found"}'
+      response = double('response', env: double('Env', body: message), body: message , status: 404 )
+      allow(response.env).to receive(:body=)
+      allow(connection).to receive(:post).and_return(response)
+
+      expect { ConvertKit::Connection.new(url).post('test_path', {hash: 'request_hash'}) }.to raise_error(ConvertKit::ResourceNotFoundError, message)
+    end
+
+    it 'raises an BadDataError' do
+      message = '{"errors": "Missing required parameter"}'
+      response = double('response', env: double('Env', body: message), body: message, status: 422)
+      allow(response.env).to receive(:body=)
+      allow(connection).to receive(:post).and_return(response)
+
+      expect { ConvertKit::Connection.new(url).post('test_path', {hash: 'request_hash'}) }.to raise_error(ConvertKit::BadDataError, message)
+    end
+
+    it 'raises an RateLimitError' do
+      message = ''
+      response = double('response', env: double('Env', body: message), body: message, status: 429)
+      allow(response.env).to receive(:body=)
+      allow(connection).to receive(:post).and_return(response)
+
+      expect { ConvertKit::Connection.new(url).post('test_path', {hash: 'request_hash'}) }.to raise_error(ConvertKit::RateLimitError, message)
+    end
+
+    it 'raises an ServerError' do
+      message = '{"errors": "Internal Server Error"}'
+      response = double('response', env: double('Env', body: message), body: message, status: 500)
+      allow(response.env).to receive(:body=)
+      allow(connection).to receive(:post).and_return(response)
+
+      expect { ConvertKit::Connection.new(url).post('test_path', {hash: 'request_hash'}) }.to raise_error(ConvertKit::ServerError, message)
+    end
+  end
 end

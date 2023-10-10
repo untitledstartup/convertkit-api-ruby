@@ -33,10 +33,22 @@ module ConvertKit
     end
 
     def process_response(response)
-      return response if response.body.strip.empty?
+      # Need to parse the response body for successful and error responses
+      response.env.body = JSON.parse(response.env.body) unless response.body.strip.empty?
 
-      response.env.body = JSON.parse(response.env.body)
-      response
+      # Based on error responses mentioned in https://developers.convertkit.com/v4_alpha.html#api-basics
+      case response.status
+      when 404
+        raise ConvertKit::ResourceNotFoundError, response.body
+      when 422
+        raise ConvertKit::BadDataError, response.body
+      when 429
+        raise ConvertKit::RateLimitError, response.body
+      when 500
+        raise ConvertKit::ServerError, response.body
+      else
+        response # Let the caller handle the response
+      end
     end
   end
 end
