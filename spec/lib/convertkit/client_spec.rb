@@ -184,9 +184,13 @@ describe ConvertKit::Client do
     end
 
     context 'when the response is not successful' do
-      let(:response) { double('response', success?: false, body: 'Bad Request', status: 400) }
+      it 'raises an UnauthorizedError' do
+        response = double('response', success?: false, body: '', status: 401)
+        expect { client.send(:handle_response, response) }.to raise_error(ConvertKit::UnauthorizedError)
+      end
 
       it 'raises an APIError' do
+        response = double('response', success?: false, body: 'Bad Request', status: 400)
         expect { client.send(:handle_response, response) }.to raise_error(ConvertKit::APIError, '400: Bad Request')
       end
     end
