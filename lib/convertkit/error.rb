@@ -5,5 +5,10 @@ module ConvertKit
   class UnsupportedResponseTypeError < StandardError; end
   class InvalidScopeError < StandardError; end
   class OauthError < StandardError; end
+  class UnauthorizedError < StandardError; end
+  class ResourceNotFoundError < StandardError; end
+  class BadDataError < StandardError; end
+  class RateLimitError < StandardError; end
+  class ServerError < StandardError; end
   class APIError < StandardError; end
 end
