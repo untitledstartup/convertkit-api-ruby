@@ -60,8 +60,12 @@ module ConvertKit
       if response.success?
         raw_response ? response: response.body
       else
-        # TODO add more specific error handling with different error classes
-        raise ConvertKit::APIError, "#{response.status}: #{response.body}"
+        case response.status
+        when 401
+          raise ConvertKit::UnauthorizedError, response.body
+        else
+          raise ConvertKit::APIError, "#{response.status}: #{response.body}"
+        end
       end
     end
   end
