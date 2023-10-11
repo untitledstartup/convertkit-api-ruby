@@ -10,5 +10,8 @@ module ConvertKit
   class BadDataError < StandardError; end
   class RateLimitError < StandardError; end
   class ServerError < StandardError; end
+  class BadGatewayError < StandardError; end
+  class ServiceUnavailableError < StandardError; end
+  class GatewayTimeoutError < StandardError; end
   class APIError < StandardError; end
 end
