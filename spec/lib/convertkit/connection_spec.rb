@@ -123,5 +123,32 @@ describe ConvertKit::Connection do
 
       expect { ConvertKit::Connection.new(url).post('test_path', {hash: 'request_hash'}) }.to raise_error(ConvertKit::ServerError, message)
     end
+
+    it 'raises an BadGatewayError' do
+      message = '{"errors": "Internal Server Error"}'
+      response = double('response', env: double('Env', body: message), body: message, status: 502)
+      allow(response.env).to receive(:body=)
+      allow(connection).to receive(:post).and_return(response)
+
+      expect { ConvertKit::Connection.new(url).post('test_path', {hash: 'request_hash'}) }.to raise_error(ConvertKit::BadGatewayError, message)
+    end
+
+    it 'raises an ServiceUnavailableError' do
+      message = '{"errors": "Internal Server Error"}'
+      response = double('response', env: double('Env', body: message), body: message, status: 503)
+      allow(response.env).to receive(:body=)
+      allow(connection).to receive(:post).and_return(response)
+
+      expect { ConvertKit::Connection.new(url).post('test_path', {hash: 'request_hash'}) }.to raise_error(ConvertKit::ServiceUnavailableError, message)
+    end
+
+    it 'raises an GatewayTimeoutError' do
+      message = '{"errors": "Internal Server Error"}'
+      response = double('response', env: double('Env', body: message), body: message, status: 504)
+      allow(response.env).to receive(:body=)
+      allow(connection).to receive(:post).and_return(response)
+
+      expect { ConvertKit::Connection.new(url).post('test_path', {hash: 'request_hash'}) }.to raise_error(ConvertKit::GatewayTimeoutError, message)
+    end
   end
 end
