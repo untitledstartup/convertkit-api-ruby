@@ -128,6 +128,27 @@ describe ConvertKit::OAuth do
     end
   end
 
+  describe '#revoke_token' do
+    let(:oauth) { ConvertKit::OAuth.new(client_id, client_secret, redirect_uri: redirect_uri, code: code, refresh_token: refresh_token) }
+    let(:revoke_path) { 'oauth/revoke' }
+    let(:token) { 'random_token' }
+
+    before do
+      allow(ConvertKit::Connection).to receive(:new).with(url).and_return(connection)
+      allow(response).to receive(:success?).and_return(true)
+    end
+
+    it 'returns success response' do
+      expect(connection).to receive(:post).with(revoke_path, {
+        client_id: client_id,
+        client_secret: client_secret,
+        token: token,
+      }).and_return(response)
+
+      expect(oauth.revoke_token(token)).to eq(true)
+    end
+  end
+
   describe '#handle_response' do
     let(:oauth) { ConvertKit::OAuth.new(client_id, client_secret, redirect_uri: redirect_uri, code: code, refresh_token: refresh_token) }
 
@@ -135,12 +156,15 @@ describe ConvertKit::OAuth do
       allow(ConvertKit::Connection).to receive(:new).with(url).and_return(connection)
     end
 
-    context 'when server returns error response' do
+    context 'when server returns success response' do
       let(:response) { double('response', success?: true, body: 'test_body') }
 
-      it 'returns an access token response' do
-        expect(ConvertKit::AccessTokenResponse).to receive(:new).with(response.body)
-        oauth.send(:handle_response, response)
+      it 'returns response body' do
+        expect(oauth.send(:handle_response, response)).to eq(response.body)
+      end
+
+      it 'return response when raw_response is true' do
+        expect(oauth.send(:handle_response, response, true)).to eq(response)
       end
     end
 
