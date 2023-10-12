@@ -46,6 +46,12 @@ module ConvertKit
         raise ConvertKit::RateLimitError, response.body
       when 500
         raise ConvertKit::ServerError, response.body
+      when 502
+        raise ConvertKit::BadGatewayError, response.body
+      when 503
+        raise ConvertKit::ServiceUnavailableError, response.body
+      when 504
+        raise ConvertKit::GatewayTimeoutError, response.body
       else
         response # Let the caller handle the response
       end
