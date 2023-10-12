@@ -5,6 +5,7 @@ module ConvertKit
   class OAuth
     URL = 'https://app.convertkit.com/'.freeze
     TOKEN_PATH = 'oauth/token'.freeze
+    REVOKE_PATH = 'oauth/revoke'.freeze
 
     def initialize(client_id, client_secret, options = {})
       @id = client_id
@@ -24,7 +25,8 @@ module ConvertKit
         redirect_uri: options[:redirect_uri] || @redirect_uri
       }
 
-      handle_response @connection.post(TOKEN_PATH, params)
+      response = handle_response(@connection.post(TOKEN_PATH, params))
+      AccessTokenResponse.new(response)
     end
 
     def refresh_token(option = {})
@@ -35,14 +37,26 @@ module ConvertKit
         grant_type: 'refresh_token'
       }
 
-      handle_response @connection.post(TOKEN_PATH, params)
+      response = handle_response(@connection.post(TOKEN_PATH, params))
+      AccessTokenResponse.new(response)
+    end
+
+    def revoke_token(token)
+      params = {
+        client_id: @id,
+        client_secret: @secret,
+        token: token
+      }
+
+      response = handle_response(@connection.post(REVOKE_PATH, params), true)
+      response.success?
     end
 
     private
 
-    def handle_response(response)
+    def handle_response(response, raw_response = false)
       if response.success?
-        AccessTokenResponse.new response.body
+        raw_response ? response: response.body
       else
         error_description = response.body['error_description']
         case response.body['error']
