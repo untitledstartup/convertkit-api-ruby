@@ -125,7 +125,7 @@ describe ConvertKit::Connection do
     end
 
     it 'raises an BadGatewayError' do
-      message = '{"errors": "Internal Server Error"}'
+      message = ''
       response = double('response', env: double('Env', body: message), body: message, status: 502)
       allow(response.env).to receive(:body=)
       allow(connection).to receive(:post).and_return(response)
@@ -134,7 +134,7 @@ describe ConvertKit::Connection do
     end
 
     it 'raises an ServiceUnavailableError' do
-      message = '{"errors": "Internal Server Error"}'
+      message = ''
       response = double('response', env: double('Env', body: message), body: message, status: 503)
       allow(response.env).to receive(:body=)
       allow(connection).to receive(:post).and_return(response)
@@ -143,7 +143,7 @@ describe ConvertKit::Connection do
     end
 
     it 'raises an GatewayTimeoutError' do
-      message = '{"errors": "Internal Server Error"}'
+      message = ''
       response = double('response', env: double('Env', body: message), body: message, status: 504)
       allow(response.env).to receive(:body=)
       allow(connection).to receive(:post).and_return(response)
