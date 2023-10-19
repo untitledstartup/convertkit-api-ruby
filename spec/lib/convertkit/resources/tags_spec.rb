@@ -68,25 +68,18 @@ describe ConvertKit::Resources::Tags do
 
   describe '#remove_from_subscriber' do
     let(:tags) { ConvertKit::Resources::Tags.new(client) }
+    let(:response) { double('response', body: '', success?: true) }
 
-    it 'removes a tag from a subscriber' do
-      response = { 'id' => 1, 'name' => 'test_tag_name', 'created_at' => '2023-08-09T04:30:00Z' }
-      expect(client).to receive(:delete).with('subscribers/3/tags/1').and_return(response)
+    it 'removes a tag from a subscriber by id' do
+      expect(client).to receive(:delete).with('tags/1/subscribers', {id: 3}, true).and_return(response)
 
-      tag_response = tags.remove_from_subscriber(1, 3)
-      validate_tag(tag_response, response)
+      expect(tags.remove_from_subscriber(1, id: 3)).to eq true
     end
-  end
 
-  describe '#remove_from_subscriber_by_email' do
-    let(:tags) { ConvertKit::Resources::Tags.new(client) }
+    it 'removes a tag from a subscriber by email' do
+      expect(client).to receive(:delete).with('tags/1/subscribers', {email_address: 'test@test.com'}, true).and_return(response)
 
-    it 'removes a tag from a subscriber' do
-      response = { 'id' => 1, 'name' => 'test_tag_name', 'created_at' => '2023-08-09T04:30:00Z' }
-      expect(client).to receive(:post).with('tags/1/unsubscribe', { email: 'test@test.com' }).and_return(response)
-
-      tag_response = tags.remove_from_subscriber_by_email(1, 'test@test.com')
-      validate_tag(tag_response, response)
+      expect(tags.remove_from_subscriber(1, email_address: 'test@test.com')).to eq true
     end
   end
 
