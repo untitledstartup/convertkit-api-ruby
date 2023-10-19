@@ -20,8 +20,8 @@ module Validators
     end
 
     def validate_bulk_create_failure(bulk_create_failure_response, values)
-      expect(bulk_create_failure_response.body).to eq(values['body'])
       expect(bulk_create_failure_response.errors).to match_array(values['errors']) if values['errors']
+      validate_subscriber(bulk_create_failure_response.subscriber, values['subscriber']) if values['subscriber']
     end
 
     def validate_bulk_create(bulk_create_response, values)
