@@ -59,16 +59,6 @@ module ConvertKit
         response.success?
       end
 
-      # Removes a tag from a subscriber using an email address.
-      # See https://developers.convertkit.com/#remove-tag-from-a-subscriber-by-email for details.
-      # @param [Integer] tag_id
-      # @param [String] subscriber_email
-      def remove_from_subscriber_by_email(tag_id, subscriber_email)
-        response = @client.post("#{PATH}/#{tag_id}/unsubscribe", { email: subscriber_email})
-
-        TagResponse.new(response)
-      end
-
       # Returns a list of subscriptions for a given tag.
       # See https://developers.convertkit.com/#list-subscriptions-to-a-tag for details.
       # @param [Integer] tag_id
