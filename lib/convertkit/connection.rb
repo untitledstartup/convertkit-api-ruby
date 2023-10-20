@@ -18,7 +18,14 @@ module ConvertKit
     # Defined wrapper methods for Faraday's HTTP methods
     HTTP_METHODS.each do |method|
       define_method(method) do |path, params = {}|
-        response = @connection.public_send(method, path, process_request(method, params))
+        # Allow delete requests to have a body. See https://github.com/lostisland/faraday/issues/693#issuecomment-466086832
+        if method == :delete
+          response = @connection.public_send(method, path) do |request|
+            request.body = process_request(method, params)
+          end
+        else
+          response = @connection.public_send(method, path, process_request(method, params))
+        end
         process_response(response)
       end
     end

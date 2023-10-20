@@ -44,23 +44,19 @@ module ConvertKit
       end
 
       # Removes a tag from a subscriber.
-      # See https://developers.convertkit.com/#remove-tag-from-a-subscriber for details.
+      # See https://developers.convertkit.com/v4_alpha.html#delete_alpha_tags-tag_id-_subscribers for details.
       # @param [Integer] tag_id
-      # @param [Integer] subscriber_id
-      def remove_from_subscriber(tag_id, subscriber_id)
-        response = @client.delete("subscribers/#{subscriber_id}/#{PATH}/#{tag_id}")
+      # @param [Hash] options
+      # @option options [Integer] :id Subscriber Id
+      # @option options [String] :email_address  Subscriber's email address
+      def remove_from_subscriber(tag_id, options = {})
+        request = {
+          email_address: options[:email_address],
+          id: options[:id]
+        }.compact
+        response = @client.delete("#{PATH}/#{tag_id}/subscribers", request, true)
 
-        TagResponse.new(response)
-      end
-
-      # Removes a tag from a subscriber using an email address.
-      # See https://developers.convertkit.com/#remove-tag-from-a-subscriber-by-email for details.
-      # @param [Integer] tag_id
-      # @param [String] subscriber_email
-      def remove_from_subscriber_by_email(tag_id, subscriber_email)
-        response = @client.post("#{PATH}/#{tag_id}/unsubscribe", { email: subscriber_email})
-
-        TagResponse.new(response)
+        response.success?
       end
 
       # Returns a list of subscriptions for a given tag.
