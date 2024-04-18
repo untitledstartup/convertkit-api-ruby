@@ -31,7 +31,7 @@ module ConvertKit
       # @param [Integer] tag_id
       # @param [Integer] subscriber_id
       def add_to_subscriber(tag_id, subscriber_id)
-        response = @client.post("#{PATH}/#{tag_id}/subscribers/#{subscriber_id}", {}, true)
+        response = @client.post("#{PATH}/#{tag_id}/subscribers/#{subscriber_id}", '', true)
 
         response.success?
       end
@@ -40,11 +40,12 @@ module ConvertKit
       # See https://developers.convertkit.com/v4.html#tag-a-subscriber-by-email-address for details
       # @param [Integer] tag_id
       # @param [String] email_address
-      # @param [Integer] subscriber_id
-      def add_to_subscriber_by_email_address(tag_id, email_address, subscriber_id = nil)
+      # @param [Hash] options
+      # @option options [Integer] :subscriber_id
+      def add_to_subscriber_by_email_address(tag_id, email_address, options = {})
         request = {
           email_address: email_address,
-          id: subscriber_id
+          id: options[:subscriber_id]
         }.compact
         response = @client.post("#{PATH}/#{tag_id}/subscribers", request, true)
 
@@ -56,7 +57,7 @@ module ConvertKit
       # @param [Integer] tag_id
       # @param [Integer] subscriber_id
       def remove_from_subscriber(tag_id, subscriber_id)
-        response = @client.delete("#{PATH}/#{tag_id}/subscribers/#{subscriber_id}", {}, true)
+        response = @client.delete("#{PATH}/#{tag_id}/subscribers/#{subscriber_id}", '', true)
 
         response.success?
       end

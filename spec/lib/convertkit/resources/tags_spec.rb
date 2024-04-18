@@ -46,7 +46,7 @@ describe ConvertKit::Resources::Tags do
     it 'tags a subscriber by id' do
       expect(client).to receive(:post).with(
         'tags/1/subscribers/2',
-        {},
+        '',
         true
       ).and_return(response)
 
@@ -79,7 +79,7 @@ describe ConvertKit::Resources::Tags do
         true
       ).and_return(response)
 
-      subscription_response = tags.add_to_subscriber_by_email_address(1, 'test@test.com', 2)
+      subscription_response = tags.add_to_subscriber_by_email_address(1, 'test@test.com', {subscriber_id: 2})
       expect(subscription_response).to be(true)
     end
   end
@@ -89,7 +89,7 @@ describe ConvertKit::Resources::Tags do
     let(:response) { double('response', body: '', success?: true) }
 
     it 'removes a tag from a subscriber by id' do
-      expect(client).to receive(:delete).with('tags/1/subscribers/3', {}, true).and_return(response)
+      expect(client).to receive(:delete).with('tags/1/subscribers/3', '', true).and_return(response)
 
       expect(tags.remove_from_subscriber(1, 3)).to eq true
     end
