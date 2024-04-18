@@ -3,7 +3,7 @@ module ConvertKit
   # Without a valid token, the client will not be able to retrieve data from the API.
   # The ConvertKit OAuth class can be used to obtain this token.
   class Client
-    API_URL = 'https://api.convertkit.com/v4'.freeze # Using Alpha API as this is currently in active development
+    API_URL = 'https://api.convertkit.com/v4'.freeze
     HTTP_METHODS = %i[get post delete put].freeze
 
     def initialize(auth_token)
