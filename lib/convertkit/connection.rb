@@ -11,7 +11,11 @@ module ConvertKit
       @url = url
 
       @connection = Faraday.new(url: @url, headers: {'content-type' => MIME_TYPE }) do |builder|
-        builder.request :authorization, 'Bearer', options[:auth_token] if options[:auth_token]
+        if options[:auth_token]
+          builder.request :authorization, 'Bearer', options[:auth_token]
+        elsif options[:api_key]
+          builder.request 'X-Kit-Api-Key'.to_sym, 'Bearer', options[:api_key]
+        end
       end
     end
 
