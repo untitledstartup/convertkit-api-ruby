@@ -23,7 +23,7 @@ module ConvertKit
       def create(name)
         response = @client.post(PATH, { name: name })
 
-        TagResponse.new(response)
+        TagResponse.new(response['tag'])
       end
 
       # Update the name of a Tag

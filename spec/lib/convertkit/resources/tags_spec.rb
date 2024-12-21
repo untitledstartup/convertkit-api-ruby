@@ -31,10 +31,10 @@ describe ConvertKit::Resources::Tags do
 
     context 'when name is a string' do
       it 'creates a tag' do
-        response = { 'id' => 1, 'name' => 'tag_name', account_id: 1, state: 'available', 'created_at' => '2023-08-09T04:30:00Z', updated_at: '2023-08-09T04:30:00Z'}
+        response = {'tag' => { 'id' => 1, 'name' => 'tag_name', account_id: 1, state: 'available', 'created_at' => '2023-08-09T04:30:00Z', updated_at: '2023-08-09T04:30:00Z'}}
         expect(client).to receive(:post).with('tags', {name: 'tag_name'}).and_return(response)
         tags_response = tags.create('tag_name')
-        validate_tag(tags_response, response)
+        validate_tag(tags_response, response['tag'])
       end
     end
   end
