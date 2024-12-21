@@ -26,6 +26,17 @@ module ConvertKit
         TagResponse.new(response)
       end
 
+      # Update the name of a Tag
+      # See https://developers.kit.com/v4#update-tag-name for details
+      # @param [Integer] tag_id
+      # @param [Hash] options
+      # @option options [String] :name New name for Tag
+      def update(tag_id, options = {})
+        request_options = options.slice(:name)
+        response = @client.put("#{PATH}/#{tag_id}", request_options)
+        TagResponse.new(response['tag'])
+      end
+
       # Tags a subscriber
       # See https://developers.convertkit.com/v4.html#tag-a-subscriber for details
       # @param [Integer] tag_id
