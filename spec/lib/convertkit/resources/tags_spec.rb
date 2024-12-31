@@ -142,4 +142,30 @@ describe ConvertKit::Resources::Tags do
       validate_subscriptions(tag_subscriptions_response, response)
     end
   end
+
+  describe '#bulk_tag_subscribers' do
+    let(:tags) { ConvertKit::Resources::Tags.new(client) }
+    let(:taggings) { [{'tag_id' => 1, 'subscriber_id' => 1}] }
+    let(:response) do
+      {
+        'subscribers' => [{
+          'id' => 1,
+          'first_name' => 'foo',
+          'email_address' => 'foo@bar.com',
+          'created_at' => '2023-08-09T04:30:00Z',
+          'tagged_at' => '2023-08-09T04:30:00Z'
+        }],
+        'failures' => []
+      }
+    end
+
+    context 'with taggings provided' do
+      it 'tags listed subscribers' do
+        expect(client).to receive(:post).with('bulk/tags/subscribers', {taggings: taggings}).and_return(response)
+
+        tags_response = tags.bulk_tag_subscribers(taggings)
+        validate_tagged_subscribers(tags_response, response)
+      end
+    end
+  end
 end

@@ -19,6 +19,18 @@ module Validators
       end
     end
 
+    def validate_tagged_subscribers(subscribers, values)
+      subscribers.subscribers.each_with_index do |subscriber, index|
+        values = values['subscribers'][index]
+
+        expect(subscriber.id).to eq(values['id'])
+        expect(subscriber.first_name).to eq(values['first_name'])
+        expect(subscriber.email).to eq(values['email_address'])
+        expect(subscriber.created_at).to eq(DateTime.parse(values['created_at'])) unless values.fetch('created_at', '').strip.empty?
+        expect(subscriber.tagged_at).to eq(DateTime.parse(values['tagged_at'])) unless values.fetch('tagged_at', '').strip.empty?
+      end
+    end
+
     def validate_bulk_create_failure(bulk_create_failure_response, values)
       expect(bulk_create_failure_response.errors).to match_array(values['errors']) if values['errors']
       validate_subscriber(bulk_create_failure_response.subscriber, values['subscriber']) if values['subscriber']

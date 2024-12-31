@@ -96,6 +96,18 @@ module ConvertKit
 
         SubscriptionsResponse.new(response)
       end
+
+      # Bulk tag subscribers
+      # @param [Array<Hash>] taggings
+      # @option taggings [String] :tag_id
+      # @option taggings [String] :subscriber_id
+      def bulk_tag_subscribers(taggings = [])
+        raise ArgumentError, 'taggings must be an array' unless taggings.is_a?(Array)
+
+        response = @client.post("bulk/#{PATH}/subscribers", { taggings: taggings })
+
+        ConvertKit::Resources::SubscriberBulkTagResponse.new(response)
+      end
     end
   end
 end
