@@ -1,6 +1,6 @@
 module ConvertKit
   module Resources
-    class SubscriberBulkTagResponse
+    class SubscriberBulkAddTagResponse
       attr_accessor :subscribers, :failures
 
       def initialize(response)
@@ -9,7 +9,7 @@ module ConvertKit
         end
 
         @failures = response['failures'].map do |failure|
-          ConvertKit::Resources::SubscriberBulkCreateFailureResponse.new(failure)
+          ConvertKit::Resources::SubscriberBulkTagFailureResponse.new(failure)
         end
       end
     end
