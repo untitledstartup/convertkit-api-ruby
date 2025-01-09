@@ -97,16 +97,28 @@ module ConvertKit
         SubscriptionsResponse.new(response)
       end
 
-      # Bulk tag subscribers
+      # Bulk add tag to subscribers
       # @param [Array<Hash>] taggings
       # @option taggings [String] :tag_id
       # @option taggings [String] :subscriber_id
-      def bulk_tag_subscribers(taggings = [])
+      def bulk_add_to_subscribers(taggings = [])
         raise ArgumentError, 'taggings must be an array' unless taggings.is_a?(Array)
 
         response = @client.post("bulk/#{PATH}/subscribers", { taggings: taggings })
 
-        ConvertKit::Resources::SubscriberBulkTagResponse.new(response)
+        ConvertKit::Resources::SubscriberBulkAddTagResponse.new(response)
+      end
+
+      # Bulk remove tag from subscribers
+      # @param [Array<Hash>] taggings
+      # @option taggings [String] :tag_id
+      # @option taggings [String] :subscriber_id
+      def bulk_remove_from_subscribers(taggings = [])
+        raise ArgumentError, 'taggings must be an array' unless taggings.is_a?(Array)
+
+        response = @client.delete("bulk/#{PATH}/subscribers", { taggings: taggings })
+
+        ConvertKit::Resources::SubscriberBulkRemoveTagResponse.new(response)
       end
     end
   end

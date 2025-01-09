@@ -143,7 +143,7 @@ describe ConvertKit::Resources::Tags do
     end
   end
 
-  describe '#bulk_tag_subscribers' do
+  describe '#bulk_add_to_subscribers' do
     let(:tags) { ConvertKit::Resources::Tags.new(client) }
     let(:taggings) { [{'tag_id' => 1, 'subscriber_id' => 1}] }
     let(:response) do
@@ -163,8 +163,80 @@ describe ConvertKit::Resources::Tags do
       it 'tags listed subscribers' do
         expect(client).to receive(:post).with('bulk/tags/subscribers', {taggings: taggings}).and_return(response)
 
-        tags_response = tags.bulk_tag_subscribers(taggings)
+        tags_response = tags.bulk_add_to_subscribers(taggings)
         validate_tagged_subscribers(tags_response, response)
+      end
+    end
+
+    # Failures are not well documented in the API documentation
+    context 'with failures' do
+      let(:response) do
+        {
+          'subscribers' => [],
+          'failures' => [{
+            'subscriber' => {
+              'id' => 1,
+              'first_name' => 'foo',
+              'email_address' => 'foo@bar.com',
+              'created_at' => '2023-08-09T04:30:00Z',
+            },
+            'errors' => ['Test error message']
+          }]
+        }
+      end
+
+      it 'return failures with subscriber and error message' do
+        expect(client).to receive(:post).with('bulk/tags/subscribers', {taggings: taggings}).and_return(response)
+
+        tags_response = tags.bulk_add_to_subscribers(taggings)
+        expect(tags_response.failures.count).to eq(1)
+        expect(tags_response.failures.first.subscriber.id).to eq(1)
+        expect(tags_response.failures.first.errors.first).to eq('Test error message')
+      end
+    end
+  end
+
+  describe '#bulk_remove_from_subscribers' do
+    let(:tags) { ConvertKit::Resources::Tags.new(client) }
+    let(:taggings) { [{'tag_id' => 1, 'subscriber_id' => 1}] }
+    let(:response) do
+      {
+        'failures' => []
+      }
+    end
+
+    context 'with taggings provided' do
+      it 'return no failures' do
+        expect(client).to receive(:delete).with('bulk/tags/subscribers', {taggings: taggings}).and_return(response)
+
+        tags_response = tags.bulk_remove_from_subscribers(taggings)
+        expect(tags_response.failures).to be_empty
+      end
+    end
+
+    # Failures are not well documented in the API documentation
+    context 'with failures' do
+      let(:response) do
+        {
+          'failures' => [{
+            'subscriber' => {
+              'id' => 1,
+              'first_name' => 'foo',
+              'email_address' => 'foo@bar.com',
+              'created_at' => '2023-08-09T04:30:00Z',
+            },
+            'errors' => ['Test error message']
+          }]
+        }
+      end
+
+      it 'return failures with subscriber and error message' do
+        expect(client).to receive(:delete).with('bulk/tags/subscribers', {taggings: taggings}).and_return(response)
+
+        tags_response = tags.bulk_remove_from_subscribers(taggings)
+        expect(tags_response.failures.count).to eq(1)
+        expect(tags_response.failures.first.subscriber.id).to eq(1)
+        expect(tags_response.failures.first.errors.first).to eq('Test error message')
       end
     end
   end
