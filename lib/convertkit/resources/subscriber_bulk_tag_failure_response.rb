@@ -1,10 +1,10 @@
 module ConvertKit
   module Resources
     class SubscriberBulkTagFailureResponse
-      attr_accessor :subscriber, :errors
+      attr_accessor :tagging, :errors
 
       def initialize(response)
-        @subscriber = SubscriberResponse.new(response['subscriber']) if response['subscriber']
+        @tagging = SubscriberTagResponse.new(response['tagging']) if response['tagging']
         @errors = response['errors']
       end
     end
