@@ -174,11 +174,9 @@ describe ConvertKit::Resources::Tags do
         {
           'subscribers' => [],
           'failures' => [{
-            'subscriber' => {
-              'id' => 1,
-              'first_name' => 'foo',
-              'email_address' => 'foo@bar.com',
-              'created_at' => '2023-08-09T04:30:00Z',
+            'tagging' => {
+              'subscriber_id' => 1,
+              'tag_id' => 2,
             },
             'errors' => ['Test error message']
           }]
@@ -190,7 +188,8 @@ describe ConvertKit::Resources::Tags do
 
         tags_response = tags.bulk_add_to_subscribers(taggings)
         expect(tags_response.failures.count).to eq(1)
-        expect(tags_response.failures.first.subscriber.id).to eq(1)
+        expect(tags_response.failures.first.tagging.subscriber_id).to eq(1)
+        expect(tags_response.failures.first.tagging.tag_id).to eq(2)
         expect(tags_response.failures.first.errors.first).to eq('Test error message')
       end
     end
@@ -219,11 +218,9 @@ describe ConvertKit::Resources::Tags do
       let(:response) do
         {
           'failures' => [{
-            'subscriber' => {
-              'id' => 1,
-              'first_name' => 'foo',
-              'email_address' => 'foo@bar.com',
-              'created_at' => '2023-08-09T04:30:00Z',
+            'tagging' => {
+              'subscriber_id' => 1,
+              'tag_id' => 2,
             },
             'errors' => ['Test error message']
           }]
@@ -235,7 +232,8 @@ describe ConvertKit::Resources::Tags do
 
         tags_response = tags.bulk_remove_from_subscribers(taggings)
         expect(tags_response.failures.count).to eq(1)
-        expect(tags_response.failures.first.subscriber.id).to eq(1)
+        expect(tags_response.failures.first.tagging.subscriber_id).to eq(1)
+        expect(tags_response.failures.first.tagging.tag_id).to eq(2)
         expect(tags_response.failures.first.errors.first).to eq('Test error message')
       end
     end
