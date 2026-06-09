@@ -31,10 +31,10 @@ describe ConvertKit::Resources::Tags do
 
     context 'when name is a string' do
       it 'creates a tag' do
-        response = { 'id' => 1, 'name' => 'tag_name', account_id: 1, state: 'available', 'created_at' => '2023-08-09T04:30:00Z', updated_at: '2023-08-09T04:30:00Z'}
+        response = {'tag' => { 'id' => 1, 'name' => 'tag_name', account_id: 1, state: 'available', 'created_at' => '2023-08-09T04:30:00Z', updated_at: '2023-08-09T04:30:00Z'}}
         expect(client).to receive(:post).with('tags', {name: 'tag_name'}).and_return(response)
         tags_response = tags.create('tag_name')
-        validate_tag(tags_response, response)
+        validate_tag(tags_response, response['tag'])
       end
     end
   end
@@ -140,6 +140,102 @@ describe ConvertKit::Resources::Tags do
       expect(client).to receive(:get).with('tags/1/subscriptions', {}).and_return(response)
       tag_subscriptions_response = tags.subscriptions(1)
       validate_subscriptions(tag_subscriptions_response, response)
+    end
+  end
+
+  describe '#bulk_add_to_subscribers' do
+    let(:tags) { ConvertKit::Resources::Tags.new(client) }
+    let(:taggings) { [{'tag_id' => 1, 'subscriber_id' => 1}] }
+    let(:response) do
+      {
+        'subscribers' => [{
+          'id' => 1,
+          'first_name' => 'foo',
+          'email_address' => 'foo@bar.com',
+          'created_at' => '2023-08-09T04:30:00Z',
+          'tagged_at' => '2023-08-09T04:30:00Z'
+        }],
+        'failures' => []
+      }
+    end
+
+    context 'with taggings provided' do
+      it 'tags listed subscribers' do
+        expect(client).to receive(:post).with('bulk/tags/subscribers', {taggings: taggings}).and_return(response)
+
+        tags_response = tags.bulk_add_to_subscribers(taggings)
+        validate_tagged_subscribers(tags_response, response)
+      end
+    end
+
+    # Failures are not well documented in the API documentation
+    context 'with failures' do
+      let(:response) do
+        {
+          'subscribers' => [],
+          'failures' => [{
+            'tagging' => {
+              'subscriber_id' => 1,
+              'tag_id' => 2,
+            },
+            'errors' => ['Test error message']
+          }]
+        }
+      end
+
+      it 'return failures with subscriber and error message' do
+        expect(client).to receive(:post).with('bulk/tags/subscribers', {taggings: taggings}).and_return(response)
+
+        tags_response = tags.bulk_add_to_subscribers(taggings)
+        expect(tags_response.failures.count).to eq(1)
+        expect(tags_response.failures.first.tagging.subscriber_id).to eq(1)
+        expect(tags_response.failures.first.tagging.tag_id).to eq(2)
+        expect(tags_response.failures.first.errors.first).to eq('Test error message')
+      end
+    end
+  end
+
+  describe '#bulk_remove_from_subscribers' do
+    let(:tags) { ConvertKit::Resources::Tags.new(client) }
+    let(:taggings) { [{'tag_id' => 1, 'subscriber_id' => 1}] }
+    let(:response) do
+      {
+        'failures' => []
+      }
+    end
+
+    context 'with taggings provided' do
+      it 'return no failures' do
+        expect(client).to receive(:delete).with('bulk/tags/subscribers', {taggings: taggings}).and_return(response)
+
+        tags_response = tags.bulk_remove_from_subscribers(taggings)
+        expect(tags_response.failures).to be_empty
+      end
+    end
+
+    # Failures are not well documented in the API documentation
+    context 'with failures' do
+      let(:response) do
+        {
+          'failures' => [{
+            'tagging' => {
+              'subscriber_id' => 1,
+              'tag_id' => 2,
+            },
+            'errors' => ['Test error message']
+          }]
+        }
+      end
+
+      it 'return failures with subscriber and error message' do
+        expect(client).to receive(:delete).with('bulk/tags/subscribers', {taggings: taggings}).and_return(response)
+
+        tags_response = tags.bulk_remove_from_subscribers(taggings)
+        expect(tags_response.failures.count).to eq(1)
+        expect(tags_response.failures.first.tagging.subscriber_id).to eq(1)
+        expect(tags_response.failures.first.tagging.tag_id).to eq(2)
+        expect(tags_response.failures.first.errors.first).to eq('Test error message')
+      end
     end
   end
 end

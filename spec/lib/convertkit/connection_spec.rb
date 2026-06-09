@@ -3,7 +3,7 @@ describe ConvertKit::Connection do
 
   describe '#initialize' do
     it 'creates a new Faraday connection' do
-      expect(Faraday).to receive(:new).with(url: url, headers: {'content-type' => 'application/json' })
+      expect(Faraday).to receive(:new).with(url: url, headers: {'Content-Type' => 'application/json' })
       ConvertKit::Connection.new(url)
     end
   end

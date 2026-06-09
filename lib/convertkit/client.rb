@@ -69,4 +69,12 @@ module ConvertKit
       end
     end
   end
+
+  # This client behaves like the standard Client, but uses an API Key rather than OAuth access_token.
+  # Certain API resources can only be accessed with an OAuth access_token
+  class DeveloperClient < Client
+    def initialize(api_key)
+      @connection = ConvertKit::Connection.new(API_URL, api_key: api_key)
+    end
+  end
 end

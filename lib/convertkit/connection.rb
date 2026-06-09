@@ -10,8 +10,10 @@ module ConvertKit
     def initialize(url, options = {})
       @url = url
 
-      @connection = Faraday.new(url: @url, headers: {'content-type' => MIME_TYPE }) do |builder|
-        builder.request :authorization, 'Bearer', options[:auth_token] if options[:auth_token]
+      @connection = Faraday.new(url: @url, headers: default_headers(options)) do |builder|
+        if options[:auth_token]
+          builder.request :authorization, 'Bearer', options[:auth_token]
+        end
       end
     end
 
@@ -31,6 +33,12 @@ module ConvertKit
     end
 
     private
+
+    def default_headers(options)
+      headers = { 'Content-Type' => MIME_TYPE }
+      headers['X-Kit-Api-Key'] = options[:api_key] if options[:api_key]
+      headers
+    end
 
     def process_request(method, params)
       return params if method == :get
