@@ -7,11 +7,7 @@ module ConvertKit
   class OAuth
     URL = 'https://app.convertkit.com/'.freeze
     TOKEN_PATH = 'oauth/token'.freeze
-    # RFC 7009 token revocation endpoint. Requires application/x-www-form-urlencoded — see
-    # https://developers.kit.com/api-reference/oauth-token-revocation. Kit's docs name api.kit.com/v4
-    # as the canonical host; we stay on app.convertkit.com so the OAuth flow is host-consistent
-    # across authorize / token / revoke. Migrate when Kit deprecates the legacy host.
-    REVOKE_URL = 'https://app.convertkit.com/oauth/revoke'.freeze
+    REVOKE_PATH = 'oauth/revoke'.freeze
 
     def initialize(client_id, client_secret, options = {})
       @id = client_id
@@ -47,13 +43,13 @@ module ConvertKit
       AccessTokenResponse.new(response)
     end
 
-    # POSTs a form-encoded RFC 7009 revoke request directly via Net::HTTP. The gem's Connection
-    # class sends application/json, which Kit's /oauth/revoke cannot parse; per RFC 7009 the endpoint
-    # returns 200 even for unparseable requests, so any Content-Type other than form-encoded would
-    # silently no-op without actually revoking the token.
+    # POSTs a form-encoded RFC 7009 revoke request via Net::HTTP. The gem's Connection class
+    # sends application/json, which Kit's /oauth/revoke cannot parse; per RFC 7009 the endpoint
+    # returns 200 even for unparseable requests, so any Content-Type other than form-encoded
+    # would silently no-op without actually revoking the token.
     def revoke_token(token)
       response = Net::HTTP.post_form(
-        URI(REVOKE_URL),
+        URI.join(URL, REVOKE_PATH),
         token: token,
         client_id: @id,
         client_secret: @secret,
