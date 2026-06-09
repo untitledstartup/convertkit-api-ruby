@@ -130,22 +130,42 @@ describe ConvertKit::OAuth do
 
   describe '#revoke_token' do
     let(:oauth) { ConvertKit::OAuth.new(client_id, client_secret, redirect_uri: redirect_uri, code: code, refresh_token: refresh_token) }
-    let(:revoke_path) { 'oauth/revoke' }
+    let(:revoke_uri) { URI('https://api.kit.com/v4/oauth/revoke') }
     let(:token) { 'random_token' }
+    let(:net_response) { double('net_response') }
 
     before do
       allow(ConvertKit::Connection).to receive(:new).with(url).and_return(connection)
-      allow(response).to receive(:success?).and_return(true)
     end
 
-    it 'returns success response' do
-      expect(connection).to receive(:post).with(revoke_path, {
-        client_id: client_id,
-        client_secret: client_secret,
-        token: token,
-      }).and_return(response)
+    context 'when Kit returns 2xx' do
+      before do
+        allow(net_response).to receive(:code).and_return('200')
+      end
 
-      expect(oauth.revoke_token(token)).to eq(true)
+      it 'POSTs form-encoded params to api.kit.com/v4/oauth/revoke and returns true' do
+        expect(Net::HTTP).to receive(:post_form).with(
+          revoke_uri,
+          token: token,
+          client_id: client_id,
+          client_secret: client_secret,
+          token_type_hint: 'access_token'
+        ).and_return(net_response)
+
+        expect(oauth.revoke_token(token)).to eq(true)
+      end
+    end
+
+    context 'when Kit returns a non-2xx response' do
+      before do
+        allow(net_response).to receive(:code).and_return('401')
+        allow(net_response).to receive(:body).and_return('{"error":"unauthorized"}')
+        allow(Net::HTTP).to receive(:post_form).and_return(net_response)
+      end
+
+      it 'raises ConvertKit::OauthError including the HTTP status and body' do
+        expect { oauth.revoke_token(token) }.to raise_error(ConvertKit::OauthError, /401.*unauthorized/)
+      end
     end
   end
 
