@@ -32,6 +32,17 @@ module ConvertKit
       end
     end
 
+    # POSTs application/x-www-form-urlencoded params, overriding the connection's default
+    # JSON Content-Type for this single request. Required for OAuth 2.0 endpoints whose RFCs
+    # (e.g., RFC 7009 token revocation) mandate form-encoded bodies.
+    def post_form(path, params)
+      response = @connection.post(path) do |request|
+        request.headers['Content-Type'] = 'application/x-www-form-urlencoded'
+        request.body = URI.encode_www_form(params)
+      end
+      process_response(response)
+    end
+
     private
 
     def default_headers(options)
