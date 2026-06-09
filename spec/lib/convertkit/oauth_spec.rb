@@ -130,7 +130,7 @@ describe ConvertKit::OAuth do
 
   describe '#revoke_token' do
     let(:oauth) { ConvertKit::OAuth.new(client_id, client_secret, redirect_uri: redirect_uri, code: code, refresh_token: refresh_token) }
-    let(:revoke_uri) { URI('https://api.kit.com/v4/oauth/revoke') }
+    let(:revoke_uri) { URI('https://app.convertkit.com/oauth/revoke') }
     let(:token) { 'random_token' }
     let(:net_response) { double('net_response') }
 
@@ -143,7 +143,7 @@ describe ConvertKit::OAuth do
         allow(net_response).to receive(:code).and_return('200')
       end
 
-      it 'POSTs form-encoded params to api.kit.com/v4/oauth/revoke and returns true' do
+      it 'POSTs form-encoded params to app.convertkit.com/oauth/revoke and returns true' do
         expect(Net::HTTP).to receive(:post_form).with(
           revoke_uri,
           token: token,

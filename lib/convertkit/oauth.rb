@@ -7,9 +7,11 @@ module ConvertKit
   class OAuth
     URL = 'https://app.convertkit.com/'.freeze
     TOKEN_PATH = 'oauth/token'.freeze
-    # RFC 7009 token revocation endpoint. Lives under api.kit.com/v4 (not the legacy app.convertkit.com host)
-    # and requires application/x-www-form-urlencoded — see https://developers.kit.com/api-reference/oauth-token-revocation
-    REVOKE_URL = 'https://api.kit.com/v4/oauth/revoke'.freeze
+    # RFC 7009 token revocation endpoint. Requires application/x-www-form-urlencoded — see
+    # https://developers.kit.com/api-reference/oauth-token-revocation. Kit's docs name api.kit.com/v4
+    # as the canonical host; we stay on app.convertkit.com so the OAuth flow is host-consistent
+    # across authorize / token / revoke. Migrate when Kit deprecates the legacy host.
+    REVOKE_URL = 'https://app.convertkit.com/oauth/revoke'.freeze
 
     def initialize(client_id, client_secret, options = {})
       @id = client_id
