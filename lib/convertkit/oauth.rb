@@ -1,3 +1,5 @@
+require 'net/http'
+
 module ConvertKit
   # Use this class to get an access token or refresh token using the OAuth2 flow. The client id and client secret
   # should be obtained from ConvertKit and is required for this flow. The code should be obtained when initially connect
@@ -41,15 +43,24 @@ module ConvertKit
       AccessTokenResponse.new(response)
     end
 
+    # POSTs a form-encoded RFC 7009 revoke request via Net::HTTP. The gem's Connection class
+    # sends application/json, which Kit's /oauth/revoke cannot parse; per RFC 7009 the endpoint
+    # returns 200 even for unparseable requests, so any Content-Type other than form-encoded
+    # would silently no-op without actually revoking the token.
     def revoke_token(token)
-      params = {
+      response = Net::HTTP.post_form(
+        URI.join(URL, REVOKE_PATH),
+        token: token,
         client_id: @id,
         client_secret: @secret,
-        token: token
-      }
+        token_type_hint: 'access_token'
+      )
 
-      response = handle_response(@connection.post(REVOKE_PATH, params), true)
-      response.success?
+      unless response.code.to_i.between?(200, 299)
+        raise ConvertKit::OauthError, "Kit /oauth/revoke returned HTTP #{response.code}: #{response.body}"
+      end
+
+      true
     end
 
     private
