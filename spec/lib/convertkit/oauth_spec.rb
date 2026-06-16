@@ -130,41 +130,38 @@ describe ConvertKit::OAuth do
 
   describe '#revoke_token' do
     let(:oauth) { ConvertKit::OAuth.new(client_id, client_secret, redirect_uri: redirect_uri, code: code, refresh_token: refresh_token) }
-    let(:revoke_uri) { URI('https://app.convertkit.com/oauth/revoke') }
+    let(:revoke_path) { 'oauth/revoke' }
     let(:token) { 'random_token' }
-    let(:net_response) { double('net_response') }
+    let(:revoke_params) do
+      {
+        client_id: client_id,
+        client_secret: client_secret,
+        token: token,
+        token_type_hint: 'access_token'
+      }
+    end
 
     before do
       allow(ConvertKit::Connection).to receive(:new).with(url).and_return(connection)
     end
 
-    context 'when Kit returns 2xx' do
-      before do
-        allow(net_response).to receive(:code).and_return('200')
-      end
-
-      it 'POSTs form-encoded params to app.convertkit.com/oauth/revoke and returns true' do
-        expect(Net::HTTP).to receive(:post_form).with(
-          revoke_uri,
-          token: token,
-          client_id: client_id,
-          client_secret: client_secret,
-          token_type_hint: 'access_token'
-        ).and_return(net_response)
+    context 'when Kit returns success' do
+      it 'posts form-encoded params via the connection and returns true' do
+        expect(connection).to receive(:post_form).with(revoke_path, revoke_params).and_return(response)
+        allow(response).to receive(:success?).and_return(true)
 
         expect(oauth.revoke_token(token)).to eq(true)
       end
     end
 
-    context 'when Kit returns a non-2xx response' do
-      before do
-        allow(net_response).to receive(:code).and_return('401')
-        allow(net_response).to receive(:body).and_return('{"error":"unauthorized"}')
-        allow(Net::HTTP).to receive(:post_form).and_return(net_response)
-      end
+    context 'when Kit rejects the client (unauthorized_client)' do
+      it 'raises ConvertKit::UnauthorizedClientError with the error description' do
+        error_response = { 'error' => 'unauthorized_client', 'error_description' => 'You are not authorized to revoke this token' }
+        expect(connection).to receive(:post_form).with(revoke_path, revoke_params).and_return(response)
+        allow(response).to receive(:success?).and_return(false)
+        allow(response).to receive(:body).and_return(error_response)
 
-      it 'raises ConvertKit::OauthError including the HTTP status and body' do
-        expect { oauth.revoke_token(token) }.to raise_error(ConvertKit::OauthError, /401.*unauthorized/)
+        expect { oauth.revoke_token(token) }.to raise_error(ConvertKit::UnauthorizedClientError, error_response['error_description'])
       end
     end
   end

@@ -44,6 +44,33 @@ describe ConvertKit::Connection do
     end
   end
 
+  describe '#post_form' do
+    let!(:faraday_conn) { double('faraday_connection') }
+    let!(:request_headers) { {} }
+    let!(:request) { double('request', headers: request_headers) }
+    let!(:env) { double('Env', body: '') }
+    let!(:response) { double('response', env: env, status: 200) }
+
+    before do
+      allow(Faraday).to receive(:new).and_return(faraday_conn)
+      allow(response).to receive(:body).and_return(response.env.body)
+    end
+
+    it 'posts a form-encoded body with the right Content-Type' do
+      received_body = nil
+      expect(faraday_conn).to receive(:post).with('oauth/revoke') do |&block|
+        allow(request).to receive(:body=) { |b| received_body = b }
+        block.call(request)
+        response
+      end
+
+      ConvertKit::Connection.new(url).post_form('oauth/revoke', { token: 'abc', client_id: 'foo' })
+
+      expect(request_headers['Content-Type']).to eq('application/x-www-form-urlencoded')
+      expect(received_body).to eq('token=abc&client_id=foo')
+    end
+  end
+
   describe '#delete' do
     let!(:builder) { double('builder') }
     let!(:env) { double('Env', body: '{"message":"response_hash"}') }
