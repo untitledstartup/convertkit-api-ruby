@@ -48,7 +48,7 @@ module ConvertKit
       # See https://developers.convertkit.com/#destroy-field for details
       # @param [Integer] id The id of the custom field to delete
       def delete(id)
-        response = @client.delete("#{PATH}/#{id}")
+        response = @client.delete("#{PATH}/#{id}", '', true)
 
         response.success?
       end

@@ -80,7 +80,7 @@ module ConvertKit
       # See https://developers.convertkit.com/#destroy-a-broadcast for details.
       # @param id [Integer] The id of the broadcast to delete.
       def delete(id)
-        response = @client.delete("#{PATH}/#{id}")
+        response = @client.delete("#{PATH}/#{id}", '', true)
 
         response.success?
       end
