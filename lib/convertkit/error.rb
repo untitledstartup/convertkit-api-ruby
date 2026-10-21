@@ -11,7 +11,7 @@ module ConvertKit
   class ResponseError < StandardError
     attr_reader :status
 
-    def initialize(message = nil, status: nil)
+    def initialize(message = nil, status = nil)
       super(message)
       @status = status
     end
@@ -24,8 +24,8 @@ module ConvertKit
     # Seconds to wait before retrying, from Retry-After; nil when the response has none.
     attr_reader :retry_after
 
-    def initialize(message = nil, status: nil, retry_after: nil)
-      super(message, status: status)
+    def initialize(message = nil, status = nil, retry_after = nil)
+      super(message, status)
       @retry_after = retry_after
     end
   end

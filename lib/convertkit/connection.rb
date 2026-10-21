@@ -71,10 +71,10 @@ module ConvertKit
         message = json ? response.body : non_json_message(status, raw_body)
         raise rate_limit_error(message, response) if error_class == ConvertKit::RateLimitError
 
-        raise error_class.new(message, status: status)
+        raise error_class.new(message, status)
       end
 
-      raise ConvertKit::InvalidResponseError.new(non_json_message(status, raw_body), status: status) unless json
+      raise ConvertKit::InvalidResponseError.new(non_json_message(status, raw_body), status) unless json
 
       response # Let the caller handle the response
     end
@@ -108,7 +108,8 @@ module ConvertKit
     end
 
     def rate_limit_error(message, response)
-      ConvertKit::RateLimitError.new(message, status: response.status, retry_after: retry_after_seconds(response.headers['Retry-After']))
+      retry_after = retry_after_seconds(response.headers['Retry-After'])
+      ConvertKit::RateLimitError.new(message, response.status, retry_after)
     end
 
     # Kit documents no rate-limit reset header, so Retry-After (RFC 9110 §10.2.3: delay-seconds
