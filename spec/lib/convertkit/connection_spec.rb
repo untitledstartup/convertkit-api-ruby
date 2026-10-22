@@ -141,7 +141,7 @@ describe ConvertKit::Connection do
 
     it 'raises an RateLimitError' do
       message = ''
-      response = double('response', env: double('Env', body: message), body: message, status: 429)
+      response = double('response', env: double('Env', body: message), body: message, status: 429, headers: {})
       allow(response.env).to receive(:body=)
       allow(connection).to receive(:post).and_return(response)
 
@@ -182,6 +182,171 @@ describe ConvertKit::Connection do
       allow(connection).to receive(:post).and_return(response)
 
       expect { ConvertKit::Connection.new(url).post('test_path', {hash: 'request_hash'}) }.to raise_error(ConvertKit::GatewayTimeoutError, message)
+    end
+  end
+
+  describe 'checking the HTTP status of a Faraday response' do
+    let(:stubs) { Faraday::Adapter::Test::Stubs.new }
+    let(:connection) { ConvertKit::Connection.new(url) }
+
+    before do
+      allow(Faraday).to receive(:new).and_wrap_original do |original, *args, &block|
+        original.call(*args) do |builder|
+          block&.call(builder)
+          builder.adapter(:test, stubs)
+        end
+      end
+    end
+
+    it 'raises a RateLimitError carrying the status, the body and the Retry-After delay for a text 429' do
+      stubs.get('/alpha/subscribers') { [429, { 'Content-Type' => 'text/plain', 'Retry-After' => '30' }, 'Retry later.'] }
+
+      expect { connection.get('subscribers') }.to raise_error(ConvertKit::RateLimitError) { |error|
+        expect(error.message).to eq('HTTP 429 non-JSON body: Retry later.')
+        expect(error.status).to eq(429)
+        expect(error.retry_after).to eq(30)
+      }
+    end
+
+    it 'converts an HTTP-date Retry-After into seconds from now' do
+      now = Time.utc(2026, 10, 21, 18, 0, 0)
+      allow(Time).to receive(:now).and_return(now)
+      stubs.get('/alpha/subscribers') { [429, { 'Retry-After' => (now + 90).httpdate }, 'Retry later.'] }
+
+      expect { connection.get('subscribers') }.to raise_error(ConvertKit::RateLimitError) { |error|
+        expect(error.retry_after).to eq(90)
+      }
+    end
+
+    it 'treats an HTTP-date Retry-After already in the past as no delay' do
+      now = Time.utc(2026, 10, 21, 18, 0, 0)
+      allow(Time).to receive(:now).and_return(now)
+      stubs.get('/alpha/subscribers') { [429, { 'Retry-After' => (now - 90).httpdate }, 'Retry later.'] }
+
+      expect { connection.get('subscribers') }.to raise_error(ConvertKit::RateLimitError) { |error|
+        expect(error.retry_after).to eq(0)
+      }
+    end
+
+    it 'leaves the retry delay nil when Kit sends no Retry-After' do
+      stubs.get('/alpha/subscribers') { [429, {}, 'Retry later.'] }
+
+      expect { connection.get('subscribers') }.to raise_error(ConvertKit::RateLimitError) { |error|
+        expect(error.retry_after).to be_nil
+      }
+    end
+
+    it 'leaves the retry delay nil when Retry-After is neither seconds nor an HTTP-date' do
+      stubs.get('/alpha/subscribers') { [429, { 'Retry-After' => 'soon' }, 'Retry later.'] }
+
+      expect { connection.get('subscribers') }.to raise_error(ConvertKit::RateLimitError) { |error|
+        expect(error.retry_after).to be_nil
+      }
+    end
+
+    it 'keeps the parsed body as the message of a JSON 429' do
+      body = { 'errors' => ['Too many requests'] }
+      stubs.get('/alpha/subscribers') { [429, { 'Retry-After' => '5' }, JSON.generate(body)] }
+
+      expect { connection.get('subscribers') }.to raise_error(ConvertKit::RateLimitError) { |error|
+        expect(error.message).to eq(body.to_s)
+        expect(error.retry_after).to eq(5)
+      }
+    end
+
+    it 'puts only the first 200 bytes of a non-JSON body in the message' do
+      html = "<html>#{'x' * 500}</html>"
+      stubs.get('/alpha/subscribers') { [503, { 'Content-Type' => 'text/html' }, html] }
+
+      expect { connection.get('subscribers') }.to raise_error(ConvertKit::ServiceUnavailableError) { |error|
+        expect(error.message).to eq("HTTP 503 non-JSON body: #{html.byteslice(0, 200)}")
+        expect(error.status).to eq(503)
+      }
+    end
+
+    it 'keeps the message valid UTF-8 when the 200-byte cut splits a character' do
+      body = "#{'a' * 199}é and more"
+      stubs.get('/alpha/subscribers') { [500, {}, body] }
+
+      expect { connection.get('subscribers') }.to raise_error(ConvertKit::ServerError) { |error|
+        expect(error.message).to be_valid_encoding
+        expect(error.message).to start_with("HTTP 500 non-JSON body: #{'a' * 199}")
+      }
+    end
+
+    it 'raises a ServerError for a 5xx status without its own error class' do
+      stubs.get('/alpha/subscribers') { [520, {}, 'Web server is returning an unknown error'] }
+
+      expect { connection.get('subscribers') }.to raise_error(ConvertKit::ServerError) { |error|
+        expect(error.message).to eq('HTTP 520 non-JSON body: Web server is returning an unknown error')
+        expect(error.status).to eq(520)
+      }
+    end
+
+    it 'raises a ServerError with the parsed body for a JSON 501' do
+      body = { 'errors' => ['Not Implemented'] }
+      stubs.get('/alpha/subscribers') { [501, {}, JSON.generate(body)] }
+
+      expect { connection.get('subscribers') }.to raise_error(ConvertKit::ServerError, body.to_s)
+    end
+
+    it 'raises the typed 4xx error for a non-JSON 404' do
+      stubs.get('/alpha/subscribers/1') { [404, {}, 'Not Found'] }
+
+      expect { connection.get('subscribers/1') }.to raise_error(ConvertKit::ResourceNotFoundError) { |error|
+        expect(error.message).to eq('HTTP 404 non-JSON body: Not Found')
+        expect(error.status).to eq(404)
+      }
+    end
+
+    it 'raises the typed 4xx error with the parsed body for a JSON 422' do
+      body = { 'errors' => ['Email address is invalid'] }
+      stubs.post('/alpha/subscribers') { [422, {}, JSON.generate(body)] }
+
+      expect { connection.post('subscribers', { email_address: 'x' }) }.to raise_error(ConvertKit::BadDataError) { |error|
+        expect(error.message).to eq(body.to_s)
+        expect(error.status).to eq(422)
+      }
+    end
+
+    it 'returns a JSON 401 with its parsed body for the caller to handle' do
+      body = { 'errors' => ['The access token was revoked'] }
+      stubs.get('/alpha/account') { [401, {}, JSON.generate(body)] }
+
+      response = connection.get('account')
+
+      expect(response.status).to eq(401)
+      expect(response.body).to eq(body)
+    end
+
+    it 'raises an InvalidResponseError for a non-JSON body on a status the caller handles' do
+      stubs.get('/alpha/account') { [401, {}, '<html>Unauthorized</html>'] }
+
+      expect { connection.get('account') }.to raise_error(ConvertKit::InvalidResponseError) { |error|
+        expect(error.message).to eq('HTTP 401 non-JSON body: <html>Unauthorized</html>')
+        expect(error.status).to eq(401)
+      }
+    end
+
+    it 'raises an InvalidResponseError for a non-JSON 200' do
+      stubs.get('/alpha/account') { [200, {}, 'OK'] }
+
+      expect { connection.get('account') }.to raise_error(ConvertKit::InvalidResponseError, 'HTTP 200 non-JSON body: OK')
+    end
+
+    it 'returns a JSON 200 with its parsed body' do
+      stubs.get('/alpha/account') { [200, {}, '{"name":"Kit"}'] }
+
+      expect(connection.get('account').body).to eq('name' => 'Kit')
+    end
+
+    it 'returns an empty 204 unchanged' do
+      stubs.delete('/alpha/tags/1') { [204, {}, ''] }
+
+      response = connection.delete('tags/1')
+
+      expect(response.status).to eq(204)
+      expect(response.body).to eq('')
     end
   end
 end
