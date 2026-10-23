@@ -63,7 +63,7 @@ describe ConvertKit::Resources::CustomFields do
     let(:response) { double('response', success?: true) }
 
     it 'deletes a custom field' do
-      expect(client).to receive(:delete).with('custom_fields/1').and_return(response)
+      expect(client).to receive(:delete).with('custom_fields/1', '', true).and_return(response)
       expect(custom_fields.delete(1)).to be true
     end
   end

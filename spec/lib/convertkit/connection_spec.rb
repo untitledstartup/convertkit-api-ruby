@@ -42,6 +42,13 @@ describe ConvertKit::Connection do
 
       ConvertKit::Connection.new(url).post('test_path', {hash: 'request_hash'})
     end
+
+    it 'sends an empty body when no params are given' do
+      expect(connection).to receive(:post).with('test_path', '').and_return(response)
+      allow(env).to receive(:body=).with({"message" => "response_hash"})
+
+      ConvertKit::Connection.new(url).post('test_path')
+    end
   end
 
   describe '#post_form' do
@@ -93,6 +100,17 @@ describe ConvertKit::Connection do
 
       ConvertKit::Connection.new(url).delete('test_path', {hash: 'request_hash'})
     end
+
+    it 'sends an empty body when no params are given' do
+      expect_any_instance_of(Faraday::Connection).to receive(:delete).with('test_path').and_call_original
+      expect(builder).to receive(:build_response) do |connection, request|
+        expect(request.body).to eq('')
+      end.and_return(response)
+
+      allow(env).to receive(:body=).with({"message" => "response_hash"})
+
+      ConvertKit::Connection.new(url).delete('test_path')
+    end
   end
 
   describe '#put' do
@@ -110,6 +128,13 @@ describe ConvertKit::Connection do
       allow(env).to receive(:body=).with({"message" => "response_hash"})
 
       ConvertKit::Connection.new(url).put('test_path', {hash: 'request_hash'})
+    end
+
+    it 'sends an empty body when no params are given' do
+      expect(connection).to receive(:put).with('test_path', '').and_return(response)
+      allow(env).to receive(:body=).with({"message" => "response_hash"})
+
+      ConvertKit::Connection.new(url).put('test_path')
     end
   end
 

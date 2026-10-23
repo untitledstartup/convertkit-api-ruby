@@ -56,7 +56,8 @@ module ConvertKit
 
     def process_request(method, params)
       return params if method == :get
-      return params if params.empty?
+      # Faraday writes the body verbatim, so an empty payload still has to be a String.
+      return '' if params.empty?
 
       JSON.generate(params)
     end

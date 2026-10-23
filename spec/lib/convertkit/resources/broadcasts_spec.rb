@@ -150,7 +150,7 @@ describe ConvertKit::Resources::Broadcasts do
     let(:response) { double('response', success?: true) }
 
     it 'deletes a broadcast' do
-      expect(client).to receive(:delete).with('broadcasts/1').and_return(response)
+      expect(client).to receive(:delete).with('broadcasts/1', '', true).and_return(response)
       expect(broadcasts.delete(1)).to be(true)
     end
   end
