@@ -218,6 +218,13 @@ describe ConvertKit::OAuth do
         expect { oauth.send(:handle_response, response) }.to raise_error(ConvertKit::InvalidScopeError, error_response['error_description'])
       end
 
+      it 'raises invalid grant error that is still an OauthError' do
+        error_response = { 'error' => 'invalid_grant', 'error_description' => 'The provided authorization grant is invalid, expired, revoked' }
+        allow(response).to receive(:body).and_return(error_response)
+        expect { oauth.send(:handle_response, response) }.to raise_error(ConvertKit::InvalidGrantError, error_response['error_description'])
+        expect(ConvertKit::InvalidGrantError.ancestors).to include(ConvertKit::OauthError)
+      end
+
       it 'raises generic error' do
         error_response = { 'error' => 'server_error', 'error_description' => 'The authorization server encountered an unexpected condition that prevented it from fulfilling the request.' }
         allow(response).to receive(:body).and_return(error_response)

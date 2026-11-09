@@ -73,6 +73,8 @@ module ConvertKit
           raise ConvertKit::UnsupportedResponseTypeError, error_description
         when 'invalid_scope'
           raise ConvertKit::InvalidScopeError, error_description
+        when 'invalid_grant'
+          raise ConvertKit::InvalidGrantError, error_description
         else
           raise ConvertKit::OauthError, error_description
         end
