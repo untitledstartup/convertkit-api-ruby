@@ -5,6 +5,8 @@ module ConvertKit
   class UnsupportedResponseTypeError < StandardError; end
   class InvalidScopeError < StandardError; end
   class OauthError < StandardError; end
+  # Kit rejected the authorization code or refresh token. On a refresh, the Host revoked Mighty's access.
+  class InvalidGrantError < OauthError; end
   class UnauthorizedError < StandardError; end
 
   # Raised by Connection for a response it will not hand back to the caller.
